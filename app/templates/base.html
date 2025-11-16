@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}{% endblock %} | Vendor Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-content {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 flex flex-col min-h-screen">
+
+    <div class="flex-grow">
+        <div class="flex h-full">
+            <aside id="sidebar"
+                class="fixed top-0 left-0 z-30 h-full w-64 flex-col transform -translate-x-full bg-white/80 backdrop-blur-lg text-slate-800 transition-transform duration-300 ease-in-out md:translate-x-0 border-r border-slate-200/80">
+                <div class="flex h-16 items-center justify-center border-b border-slate-200/80">
+                    <h1 class="text-xl font-bold text-indigo-800 tracking-wider">GLBE LLP Portal</h1>
+                </div>
+
+                <nav id="sidebar-nav" class="flex-1 space-y-2 px-4 py-6">
+                    {% set active_class = "bg-indigo-100 text-indigo-700 font-semibold" %}
+                    {% set inactive_class = "text-slate-600 hover:bg-slate-100 hover:text-slate-900" %}
+
+                    <a href="{{ url_for('main.dashboard') }}"
+                        class="sidebar-link flex items-center rounded-lg px-4 py-3 transition-colors duration-200 {{ active_class if request.endpoint == 'main.dashboard' else inactive_class }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M2.25 12l8.954-8.955a.75.75 0 011.06 0l8.955 8.955M4.5 12.75l.75 7.5a.75.75 0 00.75.75h12a.75.75 0 00.75-.75l.75-7.5M9 21V15a2.25 2.25 0 012.25-2.25h1.5A2.25 2.25 0 0115 15v6" />
+                        </svg>
+                        Dashboard
+                    </a>
+
+                    <a href="{{ url_for('main.your_profile') }}"
+                        class="sidebar-link flex items-center rounded-lg px-4 py-3 transition-colors duration-200 {{ active_class if request.endpoint == 'main.your_profile' else inactive_class }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Your Profile
+                    </a>
+
+                    <a href="{{ url_for('main.upload_invoices')}}"
+                        class="sidebar-link flex items-center rounded-lg px-4 py-3 transition-colors duration-200 {{ active_class if request.endpoint == 'main.upload_invoices' else inactive_class }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15M9 12l3 3m0 0l3-3m-3 3V2.25" />
+                        </svg>
+                        Upload Invoices
+                    </a>
+
+                    <div>
+                        <button id="vendor-form-toggle"
+                            class="w-full flex items-center justify-between rounded-lg px-4 py-3 text-left transition-colors duration-200 {{ inactive_class }} {{ 'font-semibold text-slate-800' if request.endpoint in ['main.vendor_form_material', 'main.vendor_form_work'] else '' }}">
+                            <span class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-3 h-6 w-6" fill="none"
+                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 019 9v.375M10.125 2.25A3.375 3.375 0 0113.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 013.375 3.375M9 15l2.25 2.25L15 12" />
+                                </svg>
+                                Vendor Forms
+                            </span>
+                            <svg id="vendor-form-chevron" class="h-5 w-5 transform transition-transform duration-200"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+                        <div id="vendor-form-submenu" class="hidden space-y-1 pt-2 pl-10">
+
+                            {% if work_form_filled %}
+                            <a href="#" title="You have already submitted the Work Form. You can only submit one form."
+                                class="flex items-center justify-between rounded-md py-2 px-4 text-sm text-slate-400 opacity-75 cursor-not-allowed">
+                                <span>Material Form</span>
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('main.vendor_form_material')}}"
+                                class="flex items-center justify-between rounded-md py-2 px-4 text-sm {{ 'bg-indigo-100 font-semibold text-indigo-700' if request.endpoint == 'main.vendor_form_material' else 'text-slate-500 hover:bg-slate-100' }}">
+                                <span>Material Form</span>
+
+                                {% if material_form_filled %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-slate-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M16.5 10.5V6.75a4.5 4.5 0 00-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                </svg>
+                                {% endif %}
+                            </a>
+                            {% endif %}
+
+
+                            {% if material_form_filled %}
+                            <a href="#"
+                                title="You have already submitted the Material Form. You can only submit one form."
+                                class="flex items-center justify-between rounded-md py-2 px-4 text-sm text-slate-400 opacity-75 cursor-not-allowed">
+                                <span>Work Form</span>
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('main.vendor_form_work')}}"
+                                class="flex items-center justify-between rounded-md py-2 px-4 text-sm {{ 'bg-indigo-100 font-semibold text-indigo-700' if request.endpoint == 'main.vendor_form_work' else 'text-slate-500 hover:bg-slate-100' }}">
+                                <span>Work Form</span>
+
+                                {% if work_form_filled %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-slate-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M16.5 10.5V6.75a4.5 4.5 0 00-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                </svg>
+                                {% endif %}
+                            </a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                    <!-- <a href="{{ url_for('main.messages')}}"
+                        class="sidebar-link flex items-center rounded-lg px-4 py-3 transition-colors duration-200 {{ active_class if request.endpoint == 'main.messages' else inactive_class }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6 mr-3">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+                        </svg>
+                        Messages
+                    </a> -->
+                    <a href="{{ url_for('main.notifications')}}"
+                        class="sidebar-link flex items-center justify-between rounded-lg px-4 py-3 transition-colors duration-200 {{ active_class if request.endpoint == 'main.notifications' else inactive_class }}">
+                        <span class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                            </svg>
+                            Notifications
+                        </span>
+                        <span class="ml-auto bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                            3
+                        </span>
+                    </a>
+                    
+                    <a href="{{ url_for('main.help_support')}}"
+                        class="sidebar-link flex items-center rounded-lg px-4 py-3 transition-colors duration-200 {{ active_class if request.endpoint == 'main.help_support' else inactive_class }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                        </svg>
+                        Help & Support
+                    </a>
+                </nav>
+            </aside>
+            <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-20 hidden md:hidden"></div>
+
+            <div class="flex-1 flex flex-col ml-0 md:ml-64">
+                <header class="sticky top-0 z-20 bg-slate-50/80 backdrop-blur-lg">
+                    <div class="flex items-center justify-between h-16 px-6 border-b border-slate-200">
+                        <button id="menu-btn"
+                            class="md:hidden text-slate-500 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16m-7 6h7" />
+                            </svg>
+                        </button>
+
+                        <div id="page-title" class="hidden md:block">
+                            <h2 class="text-xl font-semibold text-slate-800">{% block page_title %}{% endblock %}</h2>
+                        </div>
+
+                        <div class="md:hidden text-lg font-bold text-indigo-800">
+                            GLBE Portal
+                        </div>
+
+                        <button id="logout-btn"
+                            class="flex items-center text-sm font-medium text-slate-600 hover:bg-red-100 hover:text-red-700 rounded-lg px-3 py-2 transition-colors duration-200 group">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 mr-2 text-slate-500 group-hover:text-red-700 transition-colors duration-200"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            <span class="hidden sm:inline">Logout</span>
+                        </button>
+                    </div>
+                </header>
+
+                <main id="main-content" class="flex-1 overflow-y-auto">
+                    <div class="container mx-auto p-4 md:p-6">
+                        {% block content %}{% endblock %}
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <footer class="relative z-10 w-full px-4 md:px-6 pb-6 text-center ml-0 md:ml-64">
+        <div class="bg-white/70 backdrop-blur-sm p-6 rounded-xl border border-slate-200">
+            <p class="text-sm text-slate-600">&copy; {{ current_year }} GLBE Vendor Portal. All Rights Reserved.</p>
+            <div
+                class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 text-xs mt-3">
+                <a href="#" class="font-medium text-indigo-600 hover:underline">Privacy Policy</a>
+                <span class="hidden sm:inline text-slate-400">|</span>
+                <a href="#" class="font-medium text-indigo-600 hover:underline">Terms of Service</a>
+                <span class="hidden sm:inline text-slate-400">|</span>
+                <a href="#" class="font-medium text-indigo-600 hover:underline">Contact Us</a>
+            </div>
+            <p class="text-xs mt-4 text-slate-500">
+                Designed & Developed by
+                <a href="https://imofficialharsh.netlify.app" target="_blank" rel="noopener noreferrer"
+                    class="font-semibold text-indigo-600 hover:underline">Harsh Kumar</a>
+            </p>
+        </div>
+    </footer>
+
+    <div id="popup-modal-overlay"
+        class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 hidden opacity-0 modal-overlay"></div>
+    <div id="popup-modal-content"
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-lg rounded-xl shadow-2xl z-50 w-11/12 max-w-md p-6 hidden transform scale-95 opacity-0 modal-content">
+        <div class="text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100">
+                <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg leading-6 font-medium text-slate-900 mt-3" id="popup-title">Information</h3>
+            <div class="mt-2 px-7 py-3">
+                <p class="text-sm text-slate-500" id="popup-message"></p>
+            </div>
+            <div class="mt-4">
+                <button id="popup-ok-button"
+                    class="w-full bg-indigo-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirm-modal-overlay"
+        class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 hidden opacity-0 modal-overlay"></div>
+    <div id="confirm-modal-content"
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-lg rounded-xl shadow-2xl z-50 w-11/12 max-w-md p-6 hidden transform scale-95 opacity-0 modal-content">
+        <div class="text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+            </div>
+            <h3 class="text-lg leading-6 font-medium text-slate-900 mt-3">Confirm Logout</h3>
+            <div class="mt-2 px-7 py-3">
+                <p class="text-sm text-slate-500">Are you sure you want to log out?</p>
+            </div>
+            <div class="mt-4 flex justify-center space-x-4">
+                <button id="confirm-cancel-button"
+                    class="px-6 py-2 bg-slate-200 text-slate-800 font-bold rounded-lg hover:bg-slate-300 transition duration-300">
+                    Cancel
+                </button>
+                <button id="confirm-ok-button"
+                    class="px-6 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-300">
+                    Yes, Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+    {% if category == 'popup' %}
+    <div id="popup-message-data" data-message="{{ message }}" data-redirect="{{ url_for('main.dashboard') }}"
+        style="display: none;"></div>
+    {% endif %}
+    {% endfor %}
+    {% endwith %}
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Mobile Sidebar Toggle ---
+            const menuBtn = document.getElementById('menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            if (menuBtn && sidebar && overlay) {
+                const closeSidebar = () => {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.add('hidden');
+                };
+
+                const openSidebar = () => {
+                    sidebar.classList.remove('-translate-x-full');
+                    overlay.classList.remove('hidden');
+                };
+
+                menuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (sidebar.classList.contains('-translate-x-full')) {
+                        openSidebar();
+                    } else {
+                        closeSidebar();
+                    }
+                });
+
+                overlay.addEventListener('click', closeSidebar);
+            }
+
+            // --- Vendor Form Dropdown Toggle ---
+            const vendorFormToggle = document.getElementById('vendor-form-toggle');
+            if (vendorFormToggle) {
+                const vendorFormSubmenu = document.getElementById('vendor-form-submenu');
+                const vendorFormChevron = document.getElementById('vendor-form-chevron');
+
+                // Logic to keep dropdown open if on a sub-page
+                const activeSubmenuLink = vendorFormSubmenu.querySelector('.bg-indigo-100');
+                if (activeSubmenuLink) {
+                    vendorFormSubmenu.classList.remove('hidden');
+                    vendorFormChevron.classList.add('rotate-180');
+                }
+
+                vendorFormToggle.addEventListener('click', () => {
+                    vendorFormSubmenu.classList.toggle('hidden');
+                    vendorFormChevron.classList.toggle('rotate-180');
+                });
+            }
+
+
+            // --- Custom Popup Modal Logic for Flashed Messages ---
+            const popupData = document.getElementById('popup-message-data');
+            if (popupData) {
+                const message = popupData.getAttribute('data-message');
+                const redirectUrl = popupData.getAttribute('data-redirect');
+                const popupOverlay = document.getElementById('popup-modal-overlay');
+                const modal = document.getElementById('popup-modal-content');
+                const messageP = document.getElementById('popup-message');
+                const okButton = document.getElementById('popup-ok-button');
+
+                messageP.textContent = message;
+                popupOverlay.classList.remove('hidden');
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    popupOverlay.classList.remove('opacity-0');
+                    modal.classList.remove('scale-95', 'opacity-0');
+                }, 10);
+
+                okButton.onclick = function () {
+                    window.location.href = redirectUrl;
+                };
+            }
+
+            // --- Logout Confirmation Modal Logic ---
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                const confirmOverlay = document.getElementById('confirm-modal-overlay');
+                const confirmModal = document.getElementById('confirm-modal-content');
+                const confirmCancelBtn = document.getElementById('confirm-cancel-button');
+                const confirmOkBtn = document.getElementById('confirm-ok-button');
+
+                const showConfirmModal = () => {
+                    confirmOverlay.classList.remove('hidden');
+                    confirmModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        confirmOverlay.classList.remove('opacity-0');
+                        confirmModal.classList.remove('scale-95', 'opacity-0');
+                    }, 10);
+                };
+
+                const hideConfirmModal = () => {
+                    confirmOverlay.classList.add('opacity-0');
+                    confirmModal.classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        confirmOverlay.classList.add('hidden');
+                        confirmModal.classList.add('hidden');
+                    }, 300);
+                };
+
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showConfirmModal();
+                });
+
+                confirmCancelBtn.addEventListener('click', hideConfirmModal);
+                confirmOverlay.addEventListener('click', hideConfirmModal);
+
+                confirmOkBtn.addEventListener('click', () => {
+                    window.location.href = "{{ url_for('auth.logout') }}";
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

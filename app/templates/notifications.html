@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications{% endblock %}
+{% block page_title %}All Notifications{% endblock %}
+
+{% block content %}
+<style>
+    @keyframes blob-move {
+        0% {
+            transform: translate(0px, 0px) scale(1);
+        }
+
+        33% {
+            transform: translate(30px, -50px) scale(1.1);
+        }
+
+        66% {
+            transform: translate(-20px, 20px) scale(0.9);
+        }
+
+        100% {
+            transform: translate(0px, 0px) scale(1);
+        }
+    }
+
+    .animate-blob {
+        animation: blob-move 8s infinite ease-in-out;
+    }
+</style>
+
+<div class="relative min-h-screen -m-4 md:-m-6 p-4 md:p-6 overflow-hidden">
+
+    <div class="absolute top-0 left-0 w-full h-full">
+        <div
+            class="absolute top-0 -left-16 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-2xl opacity-60 animate-blob">
+        </div>
+        <div class="absolute top-0 -right-16 w-72 h-72 bg-sky-200 rounded-full mix-blend-multiply filter blur-2xl opacity-60 animate-blob"
+            style="animation-delay: 2s;"></div>
+        <div class="absolute -bottom-16 left-20 w-72 h-72 bg-indigo-200 rounded-full mix-blend-multiply filter blur-2xl opacity-60 animate-blob"
+            style="animation-delay: 4s;"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="p-4 mb-4 text-sm rounded-lg 
+            {% if category == 'error' %} bg-red-100 text-red-700 rounded-lg border border-red-300
+            {% elif category == 'success' %}  bg-green-100 text-green-700 rounded-lg border border-green-300
+            {% elif category == 'warning' %}  bg-blue-100 text-blue-700 rounded-lg border border-blue-300
+            {% else %} bg-blue-100 text-blue-700 rounded-lg border border-blue-300
+            {% endif %}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 max-w-7xl mx-auto">
+            <div class="p-6 border-b border-slate-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Your Notifications</h2>
+                    {% if notifications %}
+                    <button id="mark-all-read-btn" type="button"
+                        class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors">
+                        Mark all as read
+                    </button>
+                    {% endif %}
+                </div>
+
+                <div class="p-1 bg-slate-100 rounded-lg flex space-x-1">
+                    <button type="button"
+                        class="tab-btn flex-1 px-3 py-2 rounded-md text-sm font-semibold transition-colors bg-white text-indigo-600 shadow-sm"
+                        data-filter="all">
+                        All
+                    </button>
+                    <button type="button"
+                        class="tab-btn flex-1 px-3 py-2 rounded-md text-sm font-semibold transition-colors text-slate-600 hover:bg-slate-200"
+                        data-filter="invoices">
+                        Invoice Updates
+                    </button>
+                    <button type="button"
+                        class="tab-btn flex-1 px-3 py-2 rounded-md text-sm font-semibold transition-colors text-slate-600 hover:bg-slate-200"
+                        data-filter="info">
+                        Announcements
+                    </button>
+                </div>
+            </div>
+
+            <div class="divide-y divide-slate-200">
+                {% if notifications %}
+                {% for notification in notifications %}
+
+                {% set category_type = 'info' %}
+                {% if notification.category == 'success' or notification.category == 'error' %}
+                {% set category_type = 'invoices' %}
+                {% endif %}
+
+                <a href="{{ notification.link_url or '#' }}"
+                    class="notification-item block p-5 transition duration-200 hover:bg-gray-50/50 {% if not notification.is_read %}bg-blue-50/50 unread{% endif %}"
+                    data-category="{{ category_type }}">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 pt-1">
+                            {% if notification.category == 'success' %}
+                            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-green-100">
+                                <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            {% elif notification.category == 'error' %}
+                            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-red-100">
+                                <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-gray-100">
+                                <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <p class="text-sm text-gray-700">{{ notification.message }}</p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                {{ notification.timestamp.strftime('%b %d, %Y at %I:%M %p') }}</p>
+                        </div>
+                        {% if not notification.is_read %}
+                        <div class="unread-dot w-2.5 h-2.5 bg-blue-500 rounded-full ml-auto mt-1"></div>
+                        {% endif %}
+                    </div>
+                </a>
+                {% endfor %}
+                {% else %}
+                <p class="p-6 text-center text-gray-500">You have no notifications yet.</p>
+                {% endif %}
+
+                <p id="no-notifications-message" class="p-6 text-center text-gray-500 hidden">
+                    You have no notifications in this category.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabs = document.querySelectorAll('.tab-btn');
+        const notificationItems = document.querySelectorAll('.notification-item');
+        const emptyMessage = document.getElementById('no-notifications-message');
+        const markAllReadBtn = document.getElementById('mark-all-read-btn');
+
+        // --- Tab Filtering Logic ---
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const filter = tab.getAttribute('data-filter');
+
+                // Update tab visual state
+                tabs.forEach(t => {
+                    t.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm');
+                    t.classList.add('text-slate-600', 'hover:bg-slate-200');
+                });
+                tab.classList.remove('text-slate-600', 'hover:bg-slate-200');
+                tab.classList.add('bg-white', 'text-indigo-600', 'shadow-sm');
+
+                let visibleItems = 0;
+
+                // Filter notification items
+                notificationItems.forEach(item => {
+                    const itemCategory = item.getAttribute('data-category');
+
+                    if (filter === 'all' || filter === itemCategory) {
+                        item.style.display = 'block';
+                        visibleItems++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Show or hide the 'empty' message
+                if (visibleItems === 0) {
+                    emptyMessage.style.display = 'block';
+                } else {
+                    emptyMessage.style.display = 'none';
+                }
+            });
+        });
+
+        // --- NEW: Mark All as Read Logic ---
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', () => {
+                const unreadItems = document.querySelectorAll('.notification-item.unread');
+                
+                unreadItems.forEach(item => {
+                    // Remove unread background
+                    item.classList.remove('bg-blue-50/50', 'unread');
+                    
+                    // Hide the blue dot
+                    const unreadDot = item.querySelector('.unread-dot');
+                    if (unreadDot) {
+                        unreadDot.style.display = 'none';
+                    }
+                });
+
+                // In a real app, you would also send a request to the server here.
+            });
+        }
+    });
+</script>
+{% endblock %}

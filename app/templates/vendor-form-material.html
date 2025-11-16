@@ -1,0 +1,988 @@
+{% extends "base.html" %}
+
+{% block title %}Vendor Form - Material{% endblock %}
+{% block page_title %}Vendor Registration Form - Material{% endblock %}
+
+{% block content %}
+
+<style>
+    @keyframes blob-move {
+        0% {
+            transform: translate(0px, 0px) scale(1);
+        }
+
+        33% {
+            transform: translate(30px, -50px) scale(1.1);
+        }
+
+        66% {
+            transform: translate(-20px, 20px) scale(0.9);
+        }
+
+        100% {
+            transform: translate(0px, 0px) scale(1);
+        }
+    }
+
+    .animate-blob {
+        animation: blob-move 8s infinite ease-in-out;
+    }
+</style>
+
+<div class="relative min-h-screen -m-4 md:-m-6 p-4 md:p-6 overflow-hidden">
+
+    <div class="absolute top-0 left-0 w-full h-full">
+        <div
+            class="absolute top-0 -left-16 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-2xl opacity-60 animate-blob">
+        </div>
+        <div class="absolute top-0 -right-16 w-72 h-72 bg-teal-200 rounded-full mix-blend-multiply filter blur-2xl opacity-60 animate-blob"
+            style="animation-delay: 2s;">
+        </div>
+        <div class="absolute -bottom-16 left-20 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-2xl opacity-60 animate-blob"
+            style="animation-delay: 4s;">
+        </div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto">
+    
+        <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-3 w-full max-w-sm"></div>
+    
+        {% if existing_form %}
+        <div class="p-4 mb-6 text-sm text-yellow-800 bg-yellow-100 rounded-lg border border-yellow-300" role="alert">
+            <span class="font-bold">Notice:</span> This form has already been submitted and is now locked. For any
+            changes,
+            please contact the support team.
+        </div>
+        {% else %}
+        <div class="p-4 mb-6 text-sm text-blue-800 bg-blue-100 rounded-lg border border-blue-300" role="alert">
+            <span class="font-bold">Important:</span> Please fill the form with careful and correct information as it
+            cannot be edited after submission.
+        </div>
+        {% endif %}
+    
+        <form id="material-vendor-form" method="POST" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
+    
+            <fieldset {% if existing_form %}disabled{% endif %}>
+                <div class="form-section">
+                    <h3 class="form-section-title">Section A: Company Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            {{ form.vendor_name.label(class="form-label") }}
+                            {{ form.vendor_name(class="form-input", placeholder="Vendor Name", maxlength=100) }}
+                            {% for error in form.vendor_name.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}
+                            </p>{%
+                            endfor %}
+                        </div>
+                        <div>
+                            {{ form.firm_type.label(class="form-label") }}
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
+                                {% for subfield in form.firm_type %}
+                                <label class="flex items-center">{{ subfield(class="mr-2 firm-type-radio") }} {{
+                                    subfield.label.text }}</label>
+                                {% endfor %}
+                                <div id="firm_type_other_wrapper" class="hidden">
+                                    {{ form.firm_type_other(placeholder="Others", class="form-input text-sm py-1 w-32")
+                                    }}
+                                </div>
+                            </div>
+                            {% for error in form.firm_type.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                            {%
+                            endfor %}
+                        </div>
+                        <div>
+                            {{ form.nature_of_business.label(class="form-label") }}
+                            {{ form.nature_of_business(class="form-input", placeholder="e.g., Building Material Supplier",
+                            maxlength=100) }}
+                            {% for error in form.nature_of_business.errors %}<p class="text-red-500 text-xs mt-1">{{
+                                error
+                                }}
+                            </p>{% endfor %}
+                        </div>
+                        <div>
+                            {{ form.material_supplied.label(class="form-label") }}
+                            {{ form.material_supplied(class="form-input", placeholder="e.g., Cement, TMT Steel etc",
+                            maxlength=100) }}
+                            {% for error in form.material_supplied.errors %}<p class="text-red-500 text-xs mt-1">{{
+                                error }}
+                            </p>
+                            {% endfor %}
+                        </div>
+                        <div>
+                            {{ form.establishment_date.label(class="form-label") }}
+                            {{ form.establishment_date(class="form-input") }}
+                            {% for error in form.establishment_date.errors %}<p class="text-red-500 text-xs mt-1">{{
+                                error
+                                }}
+                            </p>{% endfor %}
+                        </div>
+                        <div>
+                            {{ form.pan_number.label(class="form-label") }}
+                            <div class="relative">
+                                {{ form.pan_number(id="pan-input", class="form-input pr-10", placeholder="Your PAN",
+                                maxlength=10, style="text-transform: uppercase;") }}
+                                <span id="pan-verified-icon"
+                                    class="absolute inset-y-0 right-0 px-3 flex items-center hidden">
+                                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                                <span id="pan-invalid-icon"
+                                    class="absolute inset-y-0 right-0 px-3 flex items-center hidden">
+                                    <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                            </div>
+                            {% for error in form.pan_number.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}
+                            </p>{%
+                            endfor %}
+                        </div>
+                        <div>
+                            {{ form.gst_number.label(class="form-label") }}
+                            <div class="relative">
+                                {{ form.gst_number(id="gst-input", class="form-input pr-10", placeholder="Your GST Number",
+                                minlength=15, maxlength=15, style="text-transform: uppercase;") }}
+                                <span id="gst-verified-icon"
+                                    class="absolute inset-y-0 right-0 px-3 flex items-center hidden">
+                                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                                <span id="gst-invalid-icon"
+                                    class="absolute inset-y-0 right-0 px-3 flex items-center hidden">
+                                    <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                            </div>
+                            {% for error in form.gst_number.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}
+                            </p>{%
+                            endfor %}
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="form-section">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="form-section-title !mb-0 !pb-0 !border-none">Section B: Office & GST Address</h3>
+                        <label class="flex items-center text-sm"><input type="checkbox" id="same-as-office"
+                                class="mr-2 h-4 w-4">GST Address same as Office</label>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-4">Office Address</h4>
+                            <div class="space-y-4">
+                                <div>{{ form.office_address_1.label(class="form-label") }}{{
+                                    form.office_address_1(class="form-input", placeholder="Address Line 1") }}{% for
+                                    error
+                                    in
+                                    form.office_address_1.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                                    {%
+                                    endfor
+                                    %}</div>
+                                <div>{{ form.office_address_2.label(class="form-label") }}{{
+                                    form.office_address_2(class="form-input", placeholder="Address Line 2") }}{% for
+                                    error in form.office_address_2.errors %}<p class="text-red-500 text-xs mt-1">{{
+                                        error }}
+                                    </p>
+                                    {% endfor %}</div>
+                                <div>{{ form.office_city.label(class="form-label") }}{{
+                                    form.office_city(class="form-input",
+                                    placeholder="City") }}{% for error in form.office_city.errors %}<p
+                                        class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                                <div>{{ form.office_state.label(class="form-label") }}{{
+                                    form.office_state(class="form-input",
+                                    placeholder="State") }}{% for error in form.office_state.errors %}<p
+                                        class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                                <div>{{ form.office_pincode.label(class="form-label") }}{{
+                                    form.office_pincode(class="form-input", placeholder="PIN Code", maxlength=6) }}{%
+                                    for
+                                    error
+                                    in form.office_pincode.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                                    {%
+                                    endfor %}</div>
+                                <div>{{ form.office_contact_person.label(class="form-label") }}{{
+                                    form.office_contact_person(class="form-input", placeholder="Contact Person Name")
+                                    }}{%
+                                    for
+                                    error in form.office_contact_person.errors %}<p class="text-red-500 text-xs mt-1">{{
+                                        error
+                                        }}</p>{% endfor %}</div>
+                                <div>{{ form.office_mobile.label(class="form-label") }}{{
+                                    form.office_mobile(class="form-input",
+                                    placeholder="Mobile Number", maxlength=10) }}{% for error in
+                                    form.office_mobile.errors
+                                    %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                                <div>{{ form.office_email.label(class="form-label") }}{{
+                                    form.office_email(class="form-input",
+                                    placeholder="Email ID") }}{% for error in form.office_email.errors %}<p
+                                        class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-4">GST Registered Address</h4>
+                            <div class="space-y-4">
+                                <div>{{ form.gst_address_1.label(class="form-label") }}{{
+                                    form.gst_address_1(class="form-input",
+                                    placeholder="Address Line 1") }}{% for error in form.gst_address_1.errors %}<p
+                                        class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                                <div>{{ form.gst_address_2.label(class="form-label") }}{{
+                                    form.gst_address_2(class="form-input",
+                                    placeholder="Address Line 2") }}{% for error in form.gst_address_2.errors %}<p
+                                        class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                                <div>{{ form.gst_city.label(class="form-label") }}{{ form.gst_city(class="form-input",
+                                    placeholder="City") }}{% for error in form.gst_city.errors %}<p
+                                        class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                                <div>{{ form.gst_state.label(class="form-label") }}{{ form.gst_state(class="form-input",
+                                    placeholder="State") }}{% for error in form.gst_state.errors %}<p
+                                        class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                                <div>{{ form.gst_pincode.label(class="form-label") }}{{
+                                    form.gst_pincode(class="form-input",
+                                    placeholder="PIN Code", maxlength=6) }}{% for error in form.gst_pincode.errors %}<p
+                                        class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                                <div>{{ form.gst_contact_person.label(class="form-label") }}{{
+                                    form.gst_contact_person(class="form-input", placeholder="Contact Person Name") }}{%
+                                    for
+                                    error in form.gst_contact_person.errors %}<p class="text-red-500 text-xs mt-1">{{
+                                        error
+                                        }}
+                                    </p>{% endfor %}</div>
+                                <div>{{ form.gst_mobile.label(class="form-label") }}{{
+                                    form.gst_mobile(class="form-input",
+                                    placeholder="Mobile Number", maxlength=10) }}{% for error in form.gst_mobile.errors
+                                    %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                                <div>{{ form.gst_email.label(class="form-label") }}{{ form.gst_email(class="form-input",
+                                    placeholder="Email ID") }}{% for error in form.gst_email.errors %}<p
+                                        class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="form-section">
+                    <h3 class="form-section-title">Section C: Bank Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>{{ form.account_holder_name.label(class="form-label") }}{{
+                            form.account_holder_name(class="form-input", placeholder="Account Holder Name") }}{% for
+                            error
+                            in
+                            form.account_holder_name.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{%
+                            endfor
+                            %}
+                        </div>
+                        <div>{{ form.bank_name.label(class="form-label") }}{{ form.bank_name(class="form-input",
+                            placeholder="Bank Name") }}{% for error in form.bank_name.errors %}<p
+                                class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                        <div>{{ form.branch_name.label(class="form-label") }}{{ form.branch_name(class="form-input",
+                            placeholder="Branch Name") }}{% for error in form.branch_name.errors %}<p
+                                class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                        <div>{{ form.account_number.label(class="form-label") }}{{
+                            form.account_number(class="form-input",
+                            placeholder="Account Number", maxlength=18) }}{% for error in form.account_number.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
+                        </div>
+                        <div>{{ form.ifsc_code.label(class="form-label") }}{{ form.ifsc_code(class="form-input",
+                            placeholder="IFSC Code", maxlength=11) }}{% for error in form.ifsc_code.errors %}<p
+                                class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                    </div>
+                </div>
+    
+                <div class="form-section">
+                    <h3 class="form-section-title">Section D: Employee & Site Contact Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-4">Primary Contact</h4>
+                            <div class="space-y-4">
+                                <div>{{ form.primary_contact_name.label(class="form-label") }}{{
+                                    form.primary_contact_name(class="form-input", placeholder="Name") }}{% for error in
+                                    form.primary_contact_name.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}
+                                    </p>
+                                    {%
+                                    endfor %}</div>
+                                <div>{{ form.primary_contact_designation.label(class="form-label") }}{{
+                                    form.primary_contact_designation(class="form-input", placeholder="Designation") }}{%
+                                    for
+                                    error in form.primary_contact_designation.errors %}<p class="text-red-500 text-xs mt-1">
+                                        {{
+                                        error }}</p>{% endfor %}</div>
+                                <div>{{ form.primary_contact_mobile.label(class="form-label") }}{{
+                                    form.primary_contact_mobile(class="form-input", placeholder="Mobile Number",
+                                    maxlength=10)
+                                    }}{% for error in form.primary_contact_mobile.errors %}<p
+                                        class="text-red-500 text-xs mt-1">
+                                        {{ error }}</p>{% endfor %}</div>
+                                <div>{{ form.primary_contact_email.label(class="form-label") }}{{
+                                    form.primary_contact_email(class="form-input", placeholder="Email ID") }}{% for
+                                    error in
+                                    form.primary_contact_email.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}
+                                    </p>
+                                    {%
+                                    endfor %}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-4">Alternate Contact</h4>
+                            <div class="space-y-4">
+                                <div>{{ form.alternate_contact_name.label(class="form-label") }}{{
+                                    form.alternate_contact_name(class="form-input", placeholder="Name") }}{% for error
+                                    in
+                                    form.alternate_contact_name.errors %}<p class="text-red-500 text-xs mt-1">{{ error
+                                        }}
+                                    </p>{%
+                                    endfor %}</div>
+                                <div>{{ form.alternate_contact_designation.label(class="form-label") }}{{
+                                    form.alternate_contact_designation(class="form-input", placeholder="Designation")
+                                    }}{%
+                                    for
+                                    error in form.alternate_contact_designation.errors %}<p
+                                        class="text-red-500 text-xs mt-1">{{
+                                        error }}</p>{% endfor %}</div>
+                                <div>{{ form.alternate_contact_mobile.label(class="form-label") }}{{
+                                    form.alternate_contact_mobile(class="form-input", placeholder="Mobile Number",
+                                    maxlength=10)
+                                    }}{% for error in form.alternate_contact_mobile.errors %}<p
+                                        class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}</div>
+                                <div>{{ form.alternate_contact_email.label(class="form-label") }}{{
+                                    form.alternate_contact_email(class="form-input", placeholder="Email ID") }}{% for
+                                    error
+                                    in
+                                    form.alternate_contact_email.errors %}<p class="text-red-500 text-xs mt-1">{{ error
+                                        }}
+                                    </p>{%
+                                    endfor %}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="form-section">
+                    <h3 class="form-section-title">Section E: Type of Work / Category</h3>
+                    <p class="form-label">Check at least one that applies</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2">
+                        {% for subfield in form.work_category %}
+                        <label class="flex items-center">{{ subfield(class="mr-2 h-4 w-4 work-category-checkbox") }} {{
+                            subfield.label.text }}</label>
+                        {% endfor %}
+                    </div>
+                    <div id="work_category_other_wrapper" class="hidden mt-4">
+                        {{ form.work_category_other(placeholder="Miscellaneous", class="form-input text-sm py-1") }}
+                    </div>
+                    {% for error in form.work_category.errors %}<p class="text-red-500 text-xs mt-2">{{ error }}</p>{%
+                    endfor %}
+                </div>
+    
+                <div class="form-section">
+                    <h3 class="form-section-title">Attachments</h3>
+                    <p class="text-sm text-gray-600 mb-4">Please upload the following documents. All files should be in
+                        PDF,
+                        JPEG, JPG, or PNG format (Max 2MB).</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+                        <div class="file-upload-widget">
+                            {{ form.pan_card_copy.label(class="form-label") }}
+                            {% if existing_form and existing_form.pan_card_copy_path %}
+                            <div class="mt-1">
+                                <a href="{{ url_for('main.download_vendor_doc', filename=existing_form.pan_card_copy_path) }}"
+                                    target="_blank" class="text-blue-600 hover:underline hover:text-blue-800">
+                                    View Uploaded File
+                                </a>
+                            </div>
+                            {% else %}
+                            <div
+                                class="file-drop-zone mt-1 flex justify-center items-center px-6 pt-5 pb-6 border-2 border-red-500 border-dashed rounded-lg cursor-pointer transition-colors duration-200 hover:border-black">
+                                <div class="space-y-1 text-center">
+                                    <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none"
+                                        viewBox="0 0 48 48" aria-hidden="true">
+                                        <path
+                                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <div class="flex text-sm text-slate-600">
+                                        <p class="pl-1">Choose or Drag & Drop file.</p>
+                                    </div>
+                                    <p class="text-xs text-slate-500">PDF, PNG, JPG or JPEG up to 2MB</p>
+                                </div>
+                            </div>
+                            {{ form.pan_card_copy(class="hidden file-input-field", accept=".pdf,.png,.jpg,.jpeg") }}
+                            <div class="file-preview-container mt-4 hidden border p-2 rounded-lg bg-gray-50"></div>
+                            {% for error in form.pan_card_copy.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}
+                            </p>
+                            {%
+                            endfor %}
+                            {% endif %}
+                        </div>
+    
+                        <div class="file-upload-widget">
+                            {{ form.gst_certificate_copy.label(class="form-label") }}
+                            {% if existing_form and existing_form.gst_certificate_copy_path %}
+                            <div class="mt-1">
+                                <a href="{{ url_for('main.download_vendor_doc', filename=existing_form.gst_certificate_copy_path) }}"
+                                    target="_blank" class="text-blue-600 hover:underline hover:text-blue-800">
+                                    View Uploaded File
+                                </a>
+                            </div>
+                            {% else %}
+                            <div
+                                class="file-drop-zone mt-1 flex justify-center items-center px-6 pt-5 pb-6 border-2 border-red-500 border-dashed rounded-lg cursor-pointer transition-colors duration-200 hover:border-black">
+                                <div class="space-y-1 text-center">
+                                    <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none"
+                                        viewBox="0 0 48 48" aria-hidden="true">
+                                        <path
+                                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <div class="flex text-sm text-slate-600">
+                                        <p class="pl-1">Choose or Drag & Drop file.</p>
+                                    </div>
+                                    <p class="text-xs text-slate-500">PDF, PNG, JPG or JPEG up to 2MB</p>
+                                </div>
+                            </div>
+                            {{ form.gst_certificate_copy(class="hidden file-input-field", accept=".pdf,.png,.jpg,.jpeg")
+                            }}
+                            <div class="file-preview-container mt-4 hidden border p-2 rounded-lg bg-gray-50"></div>
+                            {% for error in form.gst_certificate_copy.errors %}<p class="text-red-500 text-xs mt-1">{{
+                                error
+                                }}
+                            </p>{% endfor %}
+                            {% endif %}
+                        </div>
+    
+                        <div class="file-upload-widget">
+                            {{ form.cancelled_cheque_copy.label(class="form-label") }}
+                            {% if existing_form and existing_form.cancelled_cheque_copy_path %}
+                            <div class="mt-1">
+                                <a href="{{ url_for('main.download_vendor_doc', filename=existing_form.cancelled_cheque_copy_path) }}"
+                                    target="_blank" class="text-blue-600 hover:underline hover:text-blue-800">
+                                    View Uploaded File
+                                </a>
+                            </div>
+                            {% else %}
+                            <div
+                                class="file-drop-zone mt-1 flex justify-center items-center px-6 pt-5 pb-6 border-2 border-red-500 border-dashed rounded-lg cursor-pointer transition-colors duration-200 hover:border-black">
+                                <div class="space-y-1 text-center">
+                                    <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none"
+                                        viewBox="0 0 48 48" aria-hidden="true">
+                                        <path
+                                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <div class="flex text-sm text-slate-600">
+                                        <p class="pl-1">Choose or Drag & Drop file.</p>
+                                    </div>
+                                    <p class="text-xs text-slate-500">PDF, PNG, JPG or JPEG up to 2MB</p>
+                                </div>
+                            </div>
+                            {{ form.cancelled_cheque_copy(class="hidden file-input-field",
+                            accept=".pdf,.png,.jpg,.jpeg") }}
+                            <div class="file-preview-container mt-4 hidden border p-2 rounded-lg bg-gray-50"></div>
+                            {% for error in form.cancelled_cheque_copy.errors %}<p class="text-red-500 text-xs mt-1">{{
+                                error }}
+                            </p>{% endfor %}
+                            {% endif %}
+                        </div>
+    
+                        <div class="file-upload-widget">
+                            {{ form.address_proof_copy.label(class="form-label") }}
+                            {% if existing_form and existing_form.address_proof_copy_path %}
+                            <div class="mt-1">
+                                <a href="{{ url_for('main.download_vendor_doc', filename=existing_form.address_proof_copy_path) }}"
+                                    target="_blank" class="text-blue-600 hover:underline hover:text-blue-800">
+                                    View Uploaded File
+                                </a>
+                            </div>
+                            {% else %}
+                            <div
+                                class="file-drop-zone mt-1 flex justify-center items-center px-6 pt-5 pb-6 border-2 border-red-500 border-dashed rounded-lg cursor-pointer transition-colors duration-200 hover:border-black">
+                                <div class="space-y-1 text-center">
+                                    <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none"
+                                        viewBox="0 0 48 48" aria-hidden="true">
+                                        <path
+                                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <div class="flex text-sm text-slate-600">
+                                        <p class="pl-1">Choose or Drag & Drop file.</p>
+                                    </div>
+                                    <p class="text-xs text-slate-500">PDF, PNG, JPG or JPEG up to 2MB</p>
+                                </div>
+                            </div>
+                            {{ form.address_proof_copy(class="hidden file-input-field", accept=".pdf,.png,.jpg,.jpeg")
+                            }}
+                            <div class="file-preview-container mt-4 hidden border p-2 rounded-lg bg-gray-50"></div>
+                            {% for error in form.address_proof_copy.errors %}<p class="text-red-500 text-xs mt-1">{{
+                                error
+                                }}
+                            </p>{% endfor %}
+                            {% endif %}
+                        </div>
+    
+                        <div class="md:col-span-2 file-upload-widget">
+                            {{ form.auth_letter_copy.label(class="form-label") }}
+                            {% if existing_form and existing_form.auth_letter_copy_path %}
+                            <div class="mt-1">
+                                <a href="{{ url_for('main.download_vendor_doc', filename=existing_form.auth_letter_copy_path) }}"
+                                    target="_blank" class="text-blue-600 hover:underline hover:text-blue-800">
+                                    View Uploaded File
+                                </a>
+                            </div>
+                            {% elif existing_form %}
+                            <div class="mt-1">
+                                <p class="text-gray-500 text-sm italic">Not provided</p>
+                            </div>
+                            {% else %}
+                            <div
+                                class="file-drop-zone mt-1 flex justify-center items-center px-6 pt-5 pb-6 border-2 border-slate-500 border-dashed rounded-lg cursor-pointer transition-colors duration-200 hover:border-black">
+                                <div class="space-y-1 text-center">
+                                    <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none"
+                                        viewBox="0 0 48 48" aria-hidden="true">
+                                        <path
+                                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <div class="flex text-sm text-slate-600">
+                                        <p class="pl-1">Choose or Drag & Drop file.</p>
+                                    </div>
+                                    <p class="text-xs text-slate-500">PDF, PNG, JPG or JPEG up to 2MB</p>
+                                </div>
+                            </div>
+                            {{ form.auth_letter_copy(class="hidden file-input-field", accept=".pdf,.png,.jpg,.jpeg") }}
+                            <div class="file-preview-container mt-4 hidden border p-2 rounded-lg bg-gray-50"></div>
+                            {% for error in form.auth_letter_copy.errors %}<p class="text-red-500 text-xs mt-1">{{ error
+                                }}
+                            </p>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="form-section">
+                    <h3 class="form-section-title">Section F: Declarations</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-600 mb-4">
+                        <li>I confirm that the above information is true and accurate.</li>
+                        <li>I agree to follow the code of conduct and procurement policies of Gora Lal Builders &
+                            Engineers LLP.
+                        </li>
+                        <li>I understand that submission does not guarantee registration or work allotment.</li>
+                    </ul>
+                    <div class="flex items-center font-medium">
+                        {{ form.declaration_agreed(class="h-5 w-5 mr-3 rounded") }}
+                        {{ form.declaration_agreed.label }}
+                        {% for error in form.declaration_agreed.errors %}<p class="text-red-500 text-xs mt-1 ml-8">{{
+                            error
+                            }}
+                        </p>{% endfor %}
+                    </div>
+                </div>
+    
+                <div class="form-section">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            {{ form.signature_name.label(class="form-label") }}
+                            {{ form.signature_name(class="form-input", placeholder="Enter your full name") }}
+                            {% for error in form.signature_name.errors %}<p class="text-red-500 text-xs mt-1">{{ error
+                                }}
+                            </p>{%
+                            endfor %}
+                        </div>
+                        <div>
+                            {{ form.signature_date.label(class="form-label") }}
+                            {{ form.signature_date(class="form-input") }}
+                            {% for error in form.signature_date.errors %}<p class="text-red-500 text-xs mt-1">{{ error
+                                }}
+                            </p>{%
+                            endfor %}
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="flex justify-end mt-8">
+                    <button type="submit"
+                        class="px-8 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        Submit Form
+                    </button>
+                </div>
+            </fieldset>
+        </form>
+    
+        <script>
+            // --- Modern Toast Notification Handling ---
+            // Function to close a toast
+            window.closeToast = (toastId) => {
+                const toast = document.getElementById(toastId);
+                if (toast) {
+                    // Animate Out
+                    toast.classList.add('opacity-0', 'translate-x-full');
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 300); // Match animation duration
+                }
+            };
+
+            // Replaced the old showModal with this new toast function
+            const showModal = (message) => {
+                const toastContainer = document.getElementById('toast-container');
+                if (!toastContainer) return;
+
+                const toastId = 'toast-' + Date.now();
+                const toast = document.createElement('div');
+                toast.id = toastId;
+                // Added Tailwind classes for entrance animation
+                toast.className = 'max-w-sm w-full bg-red-600 text-white p-4 rounded-lg shadow-2xl flex items-start space-x-3 transition-all duration-300 ease-in-out transform translate-x-full opacity-0';
+
+                toast.innerHTML = `
+                        <div class="flex-shrink-0">
+                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold">Upload Error</h4>
+                            <p class="text-sm">${message}</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <button onclick="closeToast('${toastId}')" class="p-1 -m-1 rounded-full hover:bg-red-700 transition-colors">
+                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+
+                toastContainer.appendChild(toast);
+
+                // Animate In
+                requestAnimationFrame(() => {
+                    toast.classList.remove('translate-x-full', 'opacity-0');
+                    toast.classList.add('translate-x-0', 'opacity-100');
+                });
+
+                // Auto-dismiss
+                setTimeout(() => {
+                    window.closeToast(toastId);
+                }, 5000); // 5 seconds
+            };
+            // --- END Toast Notification Handling ---
+
+
+            // --- Real-time PAN and GST Validation ---
+            function setupFieldValidation(inputId, verifiedIconId, invalidIconId, regex) {
+                const inputField = document.getElementById(inputId);
+                const verifiedIcon = document.getElementById(verifiedIconId);
+                const invalidIcon = document.getElementById(invalidIconId); // Get the invalid icon element
+
+                if (!inputField) return;
+
+                inputField.addEventListener('input', function () {
+                    this.value = this.value.toUpperCase();
+                    const value = this.value;
+
+                    // Reset all validation styles and hide both icons
+                    this.classList.remove('border-green-500', 'focus:ring-green-500', 'border-red-500', 'focus:ring-red-500');
+                    if (verifiedIcon) verifiedIcon.classList.add('hidden');
+                    if (invalidIcon) invalidIcon.classList.add('hidden'); // Hide invalid icon too
+
+                    if (value.length === 0) {
+                        return;
+                    }
+
+                    if (regex.test(value)) {
+                        // Valid: show green outline and verified icon
+                        this.classList.add('border-green-500', 'focus:ring-green-500');
+                        if (verifiedIcon) verifiedIcon.classList.remove('hidden');
+                    } else {
+                        // Invalid: show red outline and invalid icon
+                        this.classList.add('border-red-500', 'focus:ring-red-500');
+                        if (invalidIcon) invalidIcon.classList.remove('hidden'); // Show invalid icon
+                    }
+                });
+            }
+
+            // Define the regular expressions for validation
+            const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+            const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+
+            // Initialize the validation for both fields, passing the new invalid icon ID
+            setupFieldValidation('pan-input', 'pan-verified-icon', 'pan-invalid-icon', panRegex);
+            setupFieldValidation('gst-input', 'gst-verified-icon', 'gst-invalid-icon', gstRegex);
+
+            // --- Set Signature Date to Today ---
+            const sigDate = document.getElementById('signature_date');
+            if (sigDate && !sigDate.value) {
+                sigDate.valueAsDate = new Date();
+            }
+
+            // --- Conditional "Type of Firm" Text Field ---
+            const firmTypeRadios = document.querySelectorAll('.firm-type-radio');
+            const firmTypeOtherWrapper = document.getElementById('firm_type_other_wrapper');
+            const firmTypeOtherInput = document.querySelector('[name="firm_type_other"]');
+            firmTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.value === 'others' && this.checked) {
+                        firmTypeOtherWrapper.classList.remove('hidden');
+                    } else {
+                        firmTypeOtherWrapper.classList.add('hidden');
+                        firmTypeOtherInput.value = '';
+                    }
+                });
+            });
+
+            // This script waits for the entire HTML document to be loaded before running.
+            document.addEventListener('DOMContentLoaded', function () {
+
+                // Get the checkbox element
+                const checkbox = document.getElementById('same-as-office');
+
+                // Define the mapping between office and GST fields.
+                const fieldMapping = {
+                    'office_address_1': 'gst_address_1',
+                    'office_address_2': 'gst_address_2',
+                    'office_city': 'gst_city',
+                    'office_state': 'gst_state',
+                    'office_pincode': 'gst_pincode',
+                    'office_contact_person': 'gst_contact_person',
+                    'office_mobile': 'gst_mobile',
+                    'office_email': 'gst_email'
+                };
+
+                // Add an event listener that triggers when the checkbox state changes.
+                if (checkbox) {
+                    checkbox.addEventListener('change', function () {
+                        // Loop through each field in our mapping.
+                        for (const sourceId in fieldMapping) {
+                            const destinationId = fieldMapping[sourceId];
+                            const sourceField = document.getElementById(sourceId);
+                            const destinationField = document.getElementById(destinationId);
+
+                            // If the checkbox is checked, copy the value from the office field to the GST field.
+                            if (this.checked) {
+                                destinationField.value = sourceField.value;
+                                destinationField.readOnly = true; // Make the GST field non-editable
+                            } else {
+                                // If the checkbox is unchecked, clear the GST field and make it editable again.
+                                destinationField.value = '';
+                                destinationField.readOnly = false;
+                            }
+                        }
+                    });
+                }
+
+
+                // --- Advanced File Upload Logic ---
+                const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+                const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+
+                // Global preview renderer
+                const renderPreview = (file, previewContainer) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        previewContainer.innerHTML = '';
+                        if (file.type.startsWith('image/')) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.className = 'max-h-60 w-auto mx-auto rounded-md shadow-sm';
+                            img.alt = 'File preview';
+                            previewContainer.appendChild(img);
+                        } else if (file.type === 'application/pdf') {
+                            const embed = document.createElement('embed');
+                            embed.src = e.target.result;
+                            embed.type = 'application/pdf';
+                            embed.className = 'w-full h-80 rounded-md';
+                            previewContainer.appendChild(embed);
+                        }
+                        previewContainer.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                };
+
+                // Setup each file widget
+                document.querySelectorAll('.file-upload-widget').forEach(widget => {
+                    const dropZone = widget.querySelector('.file-drop-zone');
+                    const fileInput = widget.querySelector('.file-input-field');
+                    const previewContainer = widget.querySelector('.file-preview-container');
+
+                    // If elements don't exist (e.g., in 'view' mode), skip
+                    if (!dropZone || !fileInput || !previewContainer) return;
+
+                    const initialDropZoneHTML = dropZone.innerHTML;
+
+                    const resetFileInput = () => {
+                        fileInput.value = '';
+                        dropZone.classList.remove('border-green-500', 'bg-green-50', 'border-red-500', 'border-indigo-400', 'bg-indigo-50/80');
+                        dropZone.classList.add('border-red-500', 'border-dashed'); // Keep red border
+                        dropZone.innerHTML = initialDropZoneHTML;
+                        previewContainer.innerHTML = '';
+                        previewContainer.classList.add('hidden');
+                    };
+
+                    const handleFile = (file) => {
+                        if (!file) return;
+
+                        dropZone.classList.remove('border-red-500', 'border-indigo-400', 'bg-indigo-50/80');
+
+                        if (file.size > MAX_FILE_SIZE) {
+                            showModal('File size exceeds 2MB. Please upload a smaller file.');
+                            resetFileInput();
+                            return;
+                        }
+
+                        if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+                            showModal('Invalid file format. Please upload a PDF, PNG, JPG or JPEG file.');
+                            resetFileInput();
+                            return;
+                        }
+
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        fileInput.files = dataTransfer.files;
+
+                        dropZone.classList.remove('border-red-500', 'border-dashed'); // Remove red border on success
+                        dropZone.classList.add('border-green-500', 'bg-green-50');
+                        dropZone.innerHTML = `
+                            <div class="space-y-1 text-center py-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <p class="text-sm text-gray-800 font-medium truncate px-2" title="${file.name}">${file.name}</p>
+                                <button type="button" class="remove-file-btn text-xs text-red-600 hover:underline">Remove file</button>
+                            </div>
+                        `;
+
+                        renderPreview(file, previewContainer);
+
+                        dropZone.querySelector('.remove-file-btn').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            resetFileInput();
+                        });
+                    };
+
+                    // Event Listeners
+                    dropZone.addEventListener('click', () => {
+                        if (!fileInput.files || fileInput.files.length === 0) {
+                            fileInput.click();
+                        }
+                    });
+
+                    fileInput.addEventListener('change', () => {
+                        if (fileInput.files.length > 0) {
+                            handleFile(fileInput.files[0]);
+                        }
+                    });
+
+                    dropZone.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        if (!fileInput.files || fileInput.files.length === 0) {
+                            dropZone.classList.add('border-indigo-400', 'bg-indigo-50/80');
+                        }
+                    });
+
+                    dropZone.addEventListener('dragleave', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('border-indigo-400', 'bg-indigo-50/80');
+                    });
+
+                    dropZone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('border-indigo-400', 'bg-indigo-50/80');
+                        if (e.dataTransfer.files.length > 0) {
+                            handleFile(e.dataTransfer.files[0]);
+                        }
+                    });
+                });
+                // --- END File Upload Logic ---
+            });
+
+            // --- Conditional "Miscellaneous" Category Text Field ---
+            const workCategoryCheckboxes = document.querySelectorAll('.work-category-checkbox');
+            const otherCategoryWrapper = document.getElementById('work_category_other_wrapper');
+            const otherCategoryInput = document.querySelector('[name="work_category_other"]');
+            workCategoryCheckboxes.forEach(checkbox => {
+                if (checkbox.value === 'other') {
+                    checkbox.addEventListener('change', function () {
+                        if (this.checked) {
+                            otherCategoryWrapper.classList.remove('hidden');
+                        } else {
+                            otherCategoryWrapper.classList.add('hidden');
+                            otherCategoryInput.value = '';
+                        }
+                    });
+                }
+            });
+
+        </script>
+    
+        <style>
+            #pan-input::placeholder,
+            #gst-input::placeholder,
+            #ifsc-input::placeholder {
+                text-transform: none;
+            }
+    
+            .form-section {
+                /* Updated for semi-transparent background */
+                background-color: rgba(255, 255, 255, 0.7);
+                backdrop-filter: blur(8px);
+                padding: 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+                margin-bottom: 1.5rem;
+            }
+    
+            .form-section-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: #1f2937;
+                border-bottom: 1px solid #e5e7eb;
+                padding-bottom: 0.75rem;
+                margin-bottom: 1.5rem;
+            }
+    
+            .form-label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: #374151;
+            }
+    
+            .form-input {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                border-radius: 0.5rem;
+                background-color: #f9fafb;
+                border: 1px solid #d1d5db;
+            }
+    
+            fieldset:disabled .form-input,
+            fieldset:disabled input[type='radio'],
+            fieldset:disabled input[type='checkbox'] {
+                background-color: #e5e7eb;
+                cursor: not-allowed;
+            }
+    
+            .form-input:read-only {
+                background-color: #eaeaec;
+                cursor: not-allowed;
+            }
+    
+            .form-input:required:invalid {
+                border-color: #ef4444;
+            }
+        </style>
+    
+    </div>
+    </div>
+    {% endblock %}

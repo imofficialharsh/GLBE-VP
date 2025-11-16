@@ -1,0 +1,22 @@
+# Environment variables
+.env
+
+
+# Uploaded files ignore
+uploads/
+
+
+# DB initialization script
+init_db.py
+
+
+# Other ignores like...
+__pycache__/
+*.pyc
+
+admin/
+
+auth/
+
+
+migrations/

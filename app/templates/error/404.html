@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 – Page Not Found</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --brand-color: #4f46e5; /* Your original Indigo */
+            --brand-color-dark: #4338ca;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --bg-light: #f9fafb;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 800px;
+            width: 100%;
+            gap: 40px;
+        }
+
+        .content {
+            max-width: 400px;
+            text-align: left;
+        }
+
+        .graphic {
+            max-width: 350px;
+            width: 100%;
+        }
+
+        .graphic svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .code {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--brand-color);
+            margin: 0 0 10px 0;
+        }
+
+        .subtitle {
+            font-size: 2.5rem; /* 40px */
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        p {
+            margin: 0 0 30px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            font-size: 1.1rem; /* 18px */
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 13px 28px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+            background: var(--brand-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn:hover {
+            background: var(--brand-color-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+        }
+        
+        /* Make it stack on small screens */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column-reverse;
+                text-align: center;
+                gap: 30px;
+            }
+            .content {
+                text-align: center;
+            }
+            .graphic {
+                max-width: 280px;
+            }
+            .subtitle {
+                font-size: 2rem;
+            }
+            p {
+                font-size: 1rem;
+            }
+        }
+
+        /* --- NEW ANIMATION --- */
+        /* This is the new dot we added */
+        #orbiting-dot {
+            /* Set the center of rotation to the planet's center (27, 27) */
+            transform-origin: 27px 27px;
+            animation: orbit 6s linear infinite;
+        }
+
+        @keyframes orbit {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        /* --- END NEW ANIMATION --- */
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="content">
+            <div class="code">404 ERROR</div>
+            <h1 class="subtitle">This page is lost in space</h1>
+            <p>
+                Looks like the page you’re looking for has taken a wrong turn.
+                Let's get you back on track.
+            </p>
+            <a href="{{ url_for('main.dashboard') }}" class="btn">Go to Dashboard</a>
+        </div>
+
+        <div class="graphic">
+            <svg viewBox="0 0 541 391" xmlns="http://www.w3.org/2000/svg">
+                <g fill="none" fill-rule="evenodd">
+                    <path d="M270.5 390.5c148.817 0 269.5-120.088 269.5-268C540 55.088 419.317-6.5 270.5-6.5S1 55.088 1 122.5c0 147.912 120.683 268 269.5 268z" fill="#F3F5F7"/>
+                    <path d="M263.633 334.34A143.5 143.5 0 0 1 120.5 191.207a143.5 143.5 0 0 1 143.133-143.13A143.5 143.5 0 0 1 406.767 191.207a143.5 143.5 0 0 1-143.134 143.133z" fill="#FFF"/>
+                    <path d="M306.94 280.607c-2.072.7-4.18.995-6.29.85-2.11-.144-4.2-.72-6.16-1.69l-34.96-17.16c-3.1-1.52-5.4-3.95-6.55-7.14l-20.9-58.1c-1.15-3.19-.94-6.6 1.12-9.28.6-.76 1.3-1.42 2.07-1.96l50.02-36.46c2.58-1.88 5.72-2.73 8.86-2.32 3.14.41 6.01 2.1 8 4.67l28.6 37.06c1.98 2.57 2.76 5.7 2.1 8.75s-2.6 5.6-5.32 6.78l-44.4 19.3c-.6.26-1.12.67-1.5 1.18-.38.51-.62 1.1-.7 1.74l-6.1 16.96c-.15.4-.22.82-.2 1.24.01.42.12.83.3 1.2l12.8 25.68c.55 1.1.2 2.43-.8 3.1l-10.23 6.82z" fill="#E6E9ED"/>
+                    <path d="M228.61 247.907c-1.15-3.19-.94-6.6 1.12-9.28.6-.76 1.3-1.42 2.07-1.96l50.02-36.46c2.58-1.88 5.72-2.73 8.86-2.32 3.14.41 6.01 2.1 8 4.67l28.6 37.06c1.98 2.57 2.76 5.7 2.1 8.75s-2.6 5.6-5.32 6.78l-44.4 19.3c-.6.26-1.12.67-1.5 1.18-.38.51-.62 1.1-.7 1.74l-6.1 16.96c-.15.4-.22.82-.2 1.24.01.42.12.83.3 1.2l12.8 25.68c.55 1.1.2 2.43-.8 3.1l-10.23 6.82c-2.07.7-4.18.995-6.29.85-2.11-.144-4.2-.72-6.16-1.69l-34.96-17.16c-3.1-1.52-5.4-3.95-6.55-7.14l-20.9-58.1z" fill="#D5D9E0"/>
+                    <g transform="translate(198 123)" fill="#4F46E5">
+                        <path d="M28.01 64.307c-3.18 1.9-7.1 1.05-9.3-2.03-2.2-3.08-1.2-7.3 1.98-9.2l49.9-29.9c3.18-1.9 7.1-1.05 9.3 2.03 2.2 3.08 1.2 7.3-1.98 9.2l-49.9 29.9z" opacity=".2"/>
+                        <path d="M37.91 74.207c-3.18 1.9-7.1 1.05-9.3-2.03-2.2-3.08-1.2-7.3 1.98-9.2l49.9-29.9c3.18-1.9 7.1-1.05 9.3 2.03 2.2 3.08 1.2 7.3-1.98 9.2l-49.9 29.9z" opacity=".2"/>
+                        <path d="M21.11 96.607c-3.18 1.9-7.1 1.05-9.3-2.03-2.2-3.08-1.2-7.3 1.98-9.2l49.9-29.9c3.18-1.9 7.1-1.05 9.3 2.03 2.2 3.08 1.2 7.3-1.98 9.2l-49.9 29.9z" opacity=".2"/>
+                        <path d="M31.01 106.507c-3.18 1.9-7.1 1.05-9.3-2.03-2.2-3.08-1.2-7.3 1.98-9.2l49.9-29.9c3.18-1.9 7.1-1.05 9.3 2.03 2.2 3.08 1.2 7.3-1.98 9.2l-49.9 29.9z" opacity=".2"/>
+                        <path d="M12.91 42.607c-3.18 1.9-7.1 1.05-9.3-2.03-2.2-3.08-1.2-7.3 1.98-9.2l70.8-42.4c3.18-1.9 7.1-1.05 9.3 2.03 2.2 3.08 1.2 7.3-1.98 9.2l-70.8 42.4z" fill-opacity=".2" fill="#4338CA"/>
+                        <path d="M92.71 58.007c-3.18 1.9-7.1 1.05-9.3-2.03-2.2-3.08-1.2-7.3 1.98-9.2l49.9-29.9c3.18-1.9 7.1-1.05 9.3 2.03 2.2 3.08 1.2 7.3-1.98 9.2l-49.9 29.9z" fill-opacity=".2" fill="#4338CA"/>
+                        <path d="M102.61 67.907c-3.18 1.9-7.1 1.05-9.3-2.03-2.2-3.08-1.2-7.3 1.98-9.2l49.9-29.9c3.18-1.9 7.1-1.05 9.3 2.03 2.2 3.08 1.2 7.3-1.98 9.2l-49.9 29.9z" fill-opacity=".2" fill="#4338CA"/>
+                        <path d="M85.81 90.307c-3.18 1.9-7.1 1.05-9.3-2.03-2.2-3.08-1.2-7.3 1.98-9.2l49.9-29.9c3.18-1.9 7.1-1.05 9.3 2.03 2.2 3.08 1.2 7.3-1.98 9.2l-49.9 29.9z" fill-opacity=".2" fill="#4338CA"/>
+                        <path d="M95.71 100.207c-3.18 1.9-7.1 1.05-9.3-2.03-2.2-3.08-1.2-7.3 1.98-9.2l49.9-29.9c3.18-1.9 7.1-1.05 9.3 2.03 2.2 3.08 1.2 7.3-1.98 9.2l-49.9 29.9z" fill-opacity=".2" fill="#4338CA"/>
+                    </g>
+                    <g transform="translate(378 283)" fill="#4F46E5">
+                        <circle cx="27" cy="27" r="27" opacity=".1"/>
+                        <circle cx="27" cy="27" r="19" opacity=".2"/>
+                        <circle cx="27" cy="27" r="11" fill-opacity=".2" fill="#4338CA"/>
+                        
+                        <circle id="orbiting-dot" cx="27" cy="-8" r="5" fill="#4F46E5"/>
+                    </g>
+                    <g transform="translate(68 50)">
+                        <circle cx="101" cy="40" r="8" fill="#FFF"/>
+                        <circle cx="60" cy="98" r="6" fill="#FFF"/>
+                        <circle cx="12" cy="65" r="4" fill="#FFF"/>
+                        <circle cx="166" cy="116" r="4" fill="#FFF"/>
+                        <circle cx="16" cy="12" r="2" fill="#FFF"/>
+                        <circle cx="180" cy="30" r="2" fill="#FFF"/>
+                    </g>
+                </g>
+            </svg>
+        </div>
+
+    </div>
+
+</body>
+</html>

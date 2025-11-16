@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .otp-input::-webkit-outer-spin-button,
+        .otp-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .otp-input[type=number] {
+            appearance: textfield;
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <div class="flex min-h-screen">
+        <div class="hidden lg:flex relative flex-col justify-between w-1/2 p-12 bg-gray-800 text-white" style="background-image: url('https://images.pexels.com/photos/93400/pexels-photo-93400.jpeg'); background-size: cover; background-position: center;">
+            <div class="z-10 relative">
+                <h1 class="text-3xl font-bold tracking-wider">GLBE VENDOR PORTAL</h1>
+            </div>
+            <div class="z-10 relative mt-auto">
+                <h2 class="text-4xl font-bold mb-4">One Final Step.</h2>
+                <p class="text-lg text-gray-300 max-w-md">For your security, we've sent a one-time code to your mobile. Please enter it to verify your identity and protect your account.</p>
+            </div>
+             <div class="absolute inset-0 bg-black opacity-50 z-0"></div>
+        </div>
+
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
+            <div class="w-full max-w-md">
+                <div class="text-center lg:text-left mb-10">
+                    <h2 class="text-3xl font-bold text-gray-800">Verify Your Identity</h2>
+                    <p class="text-gray-500 mt-2">Step 2: Enter the 6-digit code sent to <strong class="text-gray-700">{{ masked_mobile }}</strong>.</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="p-4 mb-4 text-sm rounded-lg {% if category == 'error' %}bg-red-100 text-red-700{% elif category == 'success' %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-800{% endif %}" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <form id="otp-form" method="POST" action="{{ url_for('auth.verify_signup') }}" novalidate class="space-y-6">
+                    {{ form.hidden_tag() }}
+                    
+                    <div>
+                        {{ form.otp.label(class="block text-sm font-medium text-gray-700 mb-2") }}
+                        {{ form.otp(id="otp-hidden-input", class="hidden") }}
+                        
+                        <div id="otp-container" class="flex justify-between items-center space-x-2 sm:space-x-3">
+                            <input type="number" inputmode="numeric" class="otp-input w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold rounded-lg bg-gray-50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" maxlength="1">
+                            <input type="number" inputmode="numeric" class="otp-input w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold rounded-lg bg-gray-50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" maxlength="1">
+                            <input type="number" inputmode="numeric" class="otp-input w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold rounded-lg bg-gray-50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" maxlength="1">
+                            <input type="number" inputmode="numeric" class="otp-input w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold rounded-lg bg-gray-50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" maxlength="1">
+                            <input type="number" inputmode="numeric" class="otp-input w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold rounded-lg bg-gray-50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" maxlength="1">
+                            <input type="number" inputmode="numeric" class="otp-input w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold rounded-lg bg-gray-50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" maxlength="1">
+                        </div>
+                        {% for error in form.otp.errors %}<p class="text-red-500 text-xs mt-2 text-center">{{ error }}</p>{% endfor %}
+                    </div>
+                    
+                    <div>
+                        <button id="verify-button" type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center">
+                            Verify and Create Account
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-8">
+                    <div class="text-sm mt-3 space-y-3">
+                        <p class="text-gray-600">
+                            Didn't receive a code?
+                            <a href="#" id="resend-otp-link" class="font-semibold text-blue-600 hover:text-blue-700">
+                                Resend
+                            </a>
+                            <span id="resend-timer" class="text-gray-500 ml-1"></span>
+                        </p>
+                        <p>
+                            <a href="{{ url_for('auth.signup') }}" class="font-medium text-gray-500 hover:text-gray-700">
+                                &larr; Back to Sign Up
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const otpContainer = document.getElementById('otp-container');
+            const inputs = [...otpContainer.children];
+            const hiddenInput = document.getElementById('otp-hidden-input');
+            const otpForm = document.getElementById('otp-form');
+            const verifyButton = document.getElementById('verify-button');
+            const resendLink = document.getElementById('resend-otp-link');
+            const resendTimerSpan = document.getElementById('resend-timer');
+            let resendInterval;
+
+            // --- OTP Input Logic ---
+            const updateHiddenInput = () => {
+                hiddenInput.value = inputs.map(input => input.value).join('');
+            };
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', () => {
+                    // Ensure only one digit per input
+                    if (input.value.length > 1) {
+                        input.value = input.value.slice(0, 1);
+                    }
+                    // Move to the next input if a digit is entered
+                    if (input.value && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                    updateHiddenInput();
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    // Move to the previous input on backspace if the current input is empty
+                    if (e.key === 'Backspace' && !input.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pasteData = e.clipboardData.getData('text').trim();
+                    // Check if pasted data is a valid OTP string
+                    if (/^\d{1,6}$/.test(pasteData)) {
+                        pasteData.split('').forEach((char, i) => {
+                            if (inputs[index + i]) {
+                                inputs[index + i].value = char;
+                            }
+                        });
+                        // Focus on the last pasted digit's input
+                        const lastInputIndex = Math.min(inputs.length - 1, index + pasteData.length - 1);
+                        inputs[lastInputIndex].focus();
+                        updateHiddenInput();
+                    }
+                });
+            });
+
+            // --- Form Submission Logic ---
+            otpForm.addEventListener('submit', () => {
+                verifyButton.disabled = true;
+                verifyButton.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Verifying...
+                `;
+            });
+
+            // --- Resend OTP Timer Logic ---
+            const startResendTimer = () => {
+                let timeLeft = 30;
+                // Disable the link and change its style
+                resendLink.style.pointerEvents = 'none';
+                resendLink.classList.add('text-gray-400', 'hover:text-gray-400');
+                resendLink.classList.remove('text-blue-600', 'hover:text-blue-700');
+
+                resendTimerSpan.textContent = `(in ${timeLeft}s)`;
+                
+                resendInterval = setInterval(() => {
+                    timeLeft--;
+                    resendTimerSpan.textContent = `(in ${timeLeft}s)`;
+                    if (timeLeft <= 0) {
+                        clearInterval(resendInterval);
+                        resendTimerSpan.textContent = '';
+                        // Re-enable the link
+                        resendLink.style.pointerEvents = 'auto';
+                        resendLink.classList.remove('text-gray-400', 'hover:text-gray-400');
+                        resendLink.classList.add('text-blue-600', 'hover:text-blue-700');
+                    }
+                }, 1000);
+            };
+
+            resendLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                // TODO: Add an API call here to your backend to resend the OTP
+                console.log('Resending OTP...');
+                startResendTimer();
+            });
+
+            // Start the timer automatically when the page loads
+            startResendTimer();
+        });
+    </script>
+</body>
+</html>

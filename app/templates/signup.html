@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Signup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* This makes the text the user types uppercase */
+        #pan-input {
+            text-transform: uppercase;
+        }
+
+        /* This specifically targets the placeholder and resets its transformation to normal */
+        #pan-input::placeholder {
+            text-transform: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <div class="flex min-h-screen">
+        <div class="hidden lg:flex relative flex-col justify-between w-1/2 p-12 bg-gray-800 text-white"
+            style="background-image: url('https://images.pexels.com/photos/93400/pexels-photo-93400.jpeg'); background-size: cover; background-position: center;">
+            <div class="z-10 relative">
+                <h1 class="text-3xl font-bold tracking-wider">GLBE VENDOR PORTAL</h1>
+            </div>
+            <div class="z-10 relative mt-auto">
+                <h2 class="text-4xl font-bold mb-4">Join Our Network of Trusted Vendors.</h2>
+                <p class="text-lg text-gray-300 max-w-md">Register today to streamline your invoicing, manage
+                    submissions, and partner with us on exciting new projects.</p>
+            </div>
+            <div class="absolute inset-0 bg-black opacity-50 z-0"></div>
+        </div>
+
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
+            <div class="w-full max-w-md">
+                <div class="text-center lg:text-left mb-10">
+                    <h2 class="text-3xl font-bold text-gray-800">Create Vendor Account</h2>
+                    <p class="text-gray-500 mt-2">Step 1: Fill in your details.</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="p-4 mb-4 text-sm rounded-lg {% if category == 'error' %}bg-red-100 text-red-700{% elif category == 'success' %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-800{% endif %}"
+                    role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <form action="{{ url_for('auth.signup') }}" method="POST" novalidate class="space-y-6">
+                    {{ form.hidden_tag() }}
+                    <div>
+                        {{ form.company_name.label(class="block text-sm font-medium text-gray-700 mb-2") }}
+                        {{ form.company_name(class="w-full pl-4 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-300
+                        focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder="Enter Your Company Name") }}
+                    </div>
+                    <div>
+                        {{ form.name.label(class="block text-sm font-medium text-gray-700 mb-2") }}
+                        {{ form.name(class="w-full pl-4 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-300
+                        focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder="Enter Your Full Name") }}
+                    </div>
+                    <div>
+                        {{ form.email.label(class="block text-sm font-medium text-gray-700 mb-2") }}
+                        {{ form.email(class="w-full pl-4 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-300
+                        focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder="Enter Your Email Id") }}
+                    </div>
+                    <div>
+                        {{ form.mobile.label(class="block text-sm font-medium text-gray-700 mb-2") }}
+                        {{ form.mobile(class="w-full pl-4 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-300
+                        focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder="Enter Your Mobile No.") }}
+                    </div>
+                    <div>
+                        {{ form.pan_number.label(class="block text-sm font-medium text-gray-700 mb-2") }}
+                        <div class="relative">
+                            {# The inline style attribute has been removed from the line below #}
+                            {{ form.pan_number(id="pan-input", class="w-full pl-4 pr-10 py-3 rounded-lg bg-gray-50
+                            border border-gray-300
+                            focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder="Enter Your PAN") }}
+
+                            <span id="pan-verified-icon"
+                                class="absolute inset-y-0 right-0 px-3 flex items-center hidden">
+                                <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                        </div>
+                        {% for error in form.pan_number.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{%
+                        endfor %}
+                    </div>
+                    <div>
+                        {{ form.password.label(class="block text-sm font-medium text-gray-700 mb-2") }}
+                        <div class="relative">
+                            {{ form.password(id="signup-password", class="w-full pl-4 pr-10 py-3 rounded-lg bg-gray-50
+                            border
+                            border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder="Create Strong Password") }}
+                            <button type="button" id="toggle-signup-password"
+                                class="absolute inset-y-0 right-0 px-3 flex items-center">
+                            </button>
+                        </div>
+                        {% for error in form.password.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{%
+                        endfor %}
+                    </div>
+                    <div>
+                        {{ form.confirm_password.label(class="block text-sm font-medium text-gray-700 mb-2") }}
+                        <div class="relative">
+                            {{ form.confirm_password(id="confirm-password", class="w-full pl-4 pr-10 py-3 rounded-lg
+                            bg-gray-50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500",
+                            placeholder="Confirm Your Password") }}
+                            <button type="button" id="toggle-confirm-password"
+                                class="absolute inset-y-0 right-0 px-3 flex items-center">
+                            </button>
+                        </div>
+                        {% for error in form.confirm_password.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}
+                        </p>{% endfor %}
+                    </div>
+
+                    <div>
+                        <button type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition">
+                            Proceed to Verification
+                        </button>
+                    </div>
+                </form>
+
+                <p class="text-center text-gray-600 mt-8">
+                    Already have an account?
+                    <a href="{{ url_for('auth.login') }}" class="font-semibold text-blue-600 hover:text-blue-700">
+                        Log In
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Password Confirmation Border Color Logic ---
+            const passwordInput = document.getElementById('signup-password');
+            const confirmPasswordInput = document.getElementById('confirm-password');
+
+            function validatePasswords() {
+                const pass = passwordInput.value;
+                const confirmPass = confirmPasswordInput.value;
+
+                // Reset borders
+                confirmPasswordInput.classList.remove('border-green-500', 'focus:ring-green-500', 'border-red-500', 'focus:ring-red-500');
+
+                if (confirmPass.length === 0) {
+                    return; // Don't show any color if the field is empty
+                }
+
+                if (pass === confirmPass) {
+                    // Add green border
+                    confirmPasswordInput.classList.add('border-green-500', 'focus:ring-green-500');
+                } else {
+                    // Add red border
+                    confirmPasswordInput.classList.add('border-red-500', 'focus:ring-red-500');
+                }
+            }
+
+            if (passwordInput) passwordInput.addEventListener('input', validatePasswords);
+            if (confirmPasswordInput) confirmPasswordInput.addEventListener('input', validatePasswords);
+
+            // --- Show/Hide Password Toggle Logic ---
+            function setupPasswordToggle(inputId, toggleId) {
+                const passwordField = document.getElementById(inputId);
+                const toggleButton = document.getElementById(toggleId);
+
+                const eyeIcon = `
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>`;
+
+                const eyeOffIcon = `
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                    </svg>`;
+
+                if (passwordField && toggleButton) {
+                    toggleButton.innerHTML = eyeIcon;
+                    toggleButton.addEventListener('click', function () {
+                        if (passwordField.type === 'password') {
+                            passwordField.type = 'text';
+                            toggleButton.innerHTML = eyeOffIcon;
+                        } else {
+                            passwordField.type = 'password';
+                            toggleButton.innerHTML = eyeIcon;
+                        }
+                    });
+                }
+            }
+
+            setupPasswordToggle('signup-password', 'toggle-signup-password');
+            setupPasswordToggle('confirm-password', 'toggle-confirm-password');
+        });
+
+        // --- ADD THIS SCRIPT FOR PAN VALIDATION ---
+        const panInput = document.getElementById('pan-input');
+        const panVerifiedIcon = document.getElementById('pan-verified-icon');
+        const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+        if (panInput) {
+            panInput.addEventListener('input', function () {
+                // Automatically convert input to uppercase
+                this.value = this.value.toUpperCase();
+                const panValue = this.value;
+
+                // Reset styling
+                this.classList.remove('border-green-500', 'focus:ring-green-500', 'border-red-500', 'focus:ring-red-500');
+                panVerifiedIcon.classList.add('hidden');
+
+                if (panValue.length === 0) {
+                    return; // Don't validate if the field is empty
+                }
+
+                if (panRegex.test(panValue)) {
+                    // If PAN is valid, show green outline and verified icon
+                    this.classList.add('border-green-500', 'focus:ring-green-500');
+                    panVerifiedIcon.classList.remove('hidden');
+
+                } else {
+                    // If PAN is invalid, show red outline
+                    this.classList.add('border-red-500', 'focus:ring-red-500');
+                }
+            });
+        }
+    </script>
+
+</body>
+
+</html>

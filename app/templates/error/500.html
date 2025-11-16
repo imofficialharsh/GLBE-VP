@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>500 – Internal Server Error</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display.swap');
+
+        :root {
+            --brand-color: #4f46e5; /* Your original Indigo */
+            --brand-color-dark: #4338ca;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --bg-light: #f9fafb;
+            --error-color: #dc2626; /* Red for the error symbol */
+            --gear-color: #d1d5db;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 800px;
+            width: 100%;
+            gap: 40px;
+        }
+
+        .content {
+            max-width: 400px;
+            text-align: left;
+        }
+
+        .graphic {
+            max-width: 350px;
+            width: 100%;
+        }
+
+        .graphic svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .code {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--error-color); /* Changed to red for 500 */
+            margin: 0 0 10px 0;
+        }
+
+        .subtitle {
+            font-size: 2.5rem; /* 40px */
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        p {
+            margin: 0 0 30px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            font-size: 1.1rem; /* 18px */
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 13px 28px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+            background: var(--brand-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn:hover {
+            background: var(--brand-color-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+        }
+        
+        /* Make it stack on small screens */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column-reverse;
+                text-align: center;
+                gap: 30px;
+            }
+            .content {
+                text-align: center;
+            }
+            .graphic {
+                max-width: 280px;
+            }
+            .subtitle {
+                font-size: 2rem;
+            }
+            p {
+                font-size: 1rem;
+            }
+        }
+
+        /* --- NEW ANIMATION --- */
+        /* This makes the main gear rock back and forth */
+        #stuck-gear {
+            transform-origin: center;
+            animation: rock 4s ease-in-out infinite;
+        }
+
+        @keyframes rock {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(5deg);
+            }
+            75% {
+                transform: rotate(-5deg);
+            }
+        }
+        /* --- END NEW ANIMATION --- */
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="content">
+            <div class="code">500 ERROR</div>
+            <h1 class="subtitle">Something went wrong on our end</h1>
+            <p>
+                We're sorry, but the system ran into an unexpected problem.
+                Our team has been notified and is working to fix it.
+            </p>
+            <a href="{{ url_for('main.dashboard') }}" class="btn">Go to Dashboard</a>
+        </div>
+
+        <div class="graphic">
+            <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <path id="gear-tooth" d="M-5,0 l10,0 l3,8 l-16,0 l3,-8 z" />
+                </defs>
+                
+                <rect x="50" y="50" width="200" height="200" rx="15" fill="#F3F5F7"/>
+                
+                <g transform="translate(90, 210)" fill="#E5E7EB">
+                    <circle r="25" />
+                    <g>
+                        <use href="#gear-tooth" transform="translate(0, 28)" />
+                        <use href="#gear-tooth" transform="rotate(45) translate(0, 28)" />
+                        <use href="#gear-tooth" transform="rotate(90) translate(0, 28)" />
+                        <use href="#gear-tooth" transform="rotate(135) translate(0, 28)" />
+                        <use href="#gear-tooth" transform="rotate(180) translate(0, 28)" />
+                        <use href="#gear-tooth" transform="rotate(225) translate(0, 28)" />
+                        <use href="#gear-tooth" transform="rotate(270) translate(0, 28)" />
+                        <use href="#gear-tooth" transform="rotate(315) translate(0, 28)" />
+                    </g>
+                    <circle r="10" fill="#F9FAFB" />
+                </g>
+
+                <g id="stuck-gear" transform="translate(150, 140)" fill="var(--gear-color)">
+                    <circle r="60" />
+                    <g>
+                        <use href="#gear-tooth" transform="scale(1.5) translate(0, 65)" />
+                        <use href="#gear-tooth" transform="scale(1.5) rotate(30) translate(0, 65)" />
+                        <use href="#gear-tooth" transform="scale(1.5) rotate(60) translate(0, 65)" />
+                        <use href="#gear-tooth" transform="scale(1.5) rotate(90) translate(0, 65)" />
+                        <use href="#gear-tooth" transform="scale(1.5) rotate(120) translate(0, 65)" />
+                        <use href="#gear-tooth" transform="scale(1.5) rotate(150) translate(0, 65)" />
+                        <use href="#gear-tooth" transform="scale(1.5) rotate(180) translate(0, 65)" />
+                        <use href="#gear-tooth" transform="scale(1.5) rotate(210) translate(0, 65)" />
+                        <use href="#gear-tooth" transform="scale(1.5) rotate(240) translate(0, 65)" />
+                        <use href="#gear-tooth" transform="scale(1.5) rotate(270) translate(0, 65)" />
+                        <use href="#gear-tooth" transform="scale(1.5) rotate(300) translate(0, 65)" />
+                        <use href="#gear-tooth" transform="scale(1.5) rotate(330) translate(0, 65)" />
+                    </g>
+                    <circle r="30" fill="#F9FAFB" />
+                </g>
+
+                <g transform="translate(200, 50)">
+                    <circle cx="0" cy="0" r="25" fill="var(--error-color)" />
+                    <line x1="-10" y1="-10" x2="10" y2="10" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+                    <line x1="-10" y1="10" x2="10" y2="-10" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+                </g>
+            </svg>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}All Invoices{% endblock %}
+{% block page_title %}Invoice History{% endblock %}
+
+{% block content %}
+<style>
+   @keyframes blob-move {
+      0% {
+         transform: translate(0px, 0px) scale(1);
+      }
+
+      33% {
+         transform: translate(30px, -50px) scale(1.1);
+      }
+
+      66% {
+         transform: translate(-20px, 20px) scale(0.9);
+      }
+
+      100% {
+         transform: translate(0px, 0px) scale(1);
+      }
+   }
+
+   .animate-blob {
+      animation: blob-move 8s infinite ease-in-out;
+   }
+</style>
+
+<div class="relative -m-4 md:-m-6 p-4 md:p-6 overflow-hidden">
+
+   <div class="absolute top-0 left-0 w-full h-full z-0">
+      <div
+         class="absolute top-0 -left-16 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-2xl opacity-60 animate-blob">
+      </div>
+      <div
+         class="absolute top-0 -right-16 w-72 h-72 bg-sky-200 rounded-full mix-blend-multiply filter blur-2xl opacity-60 animate-blob"
+         style="animation-delay: 2s;"></div>
+      <div
+         class="absolute -bottom-16 left-20 w-72 h-72 bg-indigo-200 rounded-full mix-blend-multiply filter blur-2xl opacity-60 animate-blob"
+         style="animation-delay: 4s;"></div>
+   </div>
+
+   <div class="relative z-10 bg-white/70 backdrop-blur-sm p-4 sm:p-6 lg:p-8 rounded-xl border border-slate-200">
+
+      <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 border-b border-slate-200/80 pb-4">
+         <h2 class="text-2xl font-bold text-slate-800">All Submitted Invoices</h2>
+         <form method="GET" action="{{ url_for('main.all_invoices') }}" class="w-full md:w-auto md:max-w-xs">
+            <div class="relative">
+      
+               <button type="submit" class="absolute inset-y-0 left-0 flex items-center pl-3">
+                  <svg class="w-5 h-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                     stroke-width="1.5" stroke="currentColor">
+                     <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                  </svg>
+               </button>
+      
+               <input type="search" name="q" value="{{ request.args.get('q', '') }}"
+                  class="block w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg bg-slate-50/80 focus:ring-indigo-300 focus:border-indigo-400 transition"
+                  placeholder="Invoice or PO Number">
+            </div>
+         </form>
+      </div>
+
+      <div class="overflow-x-auto">
+         <table class="w-full text-left">
+            <thead class="hidden md:table-header-group">
+               <tr
+                  class="text-xs font-semibold tracking-wide text-slate-500 uppercase border-b border-slate-200 bg-slate-50/50">
+                  <th class="px-4 py-3">Invoice No.</th>
+                  <th class="px-4 py-3">Submission Date</th>
+                  <th class="px-4 py-3">Description</th>
+                  <th class="px-4 py-3">Amount</th>
+                  <th class="px-4 py-3">Status</th>
+                  <th class="px-4 py-3">File</th>
+               </tr>
+            </thead>
+            <tbody class="flex flex-col gap-4 md:table-row-group">
+               {% if invoices and invoices.items %}
+               {% for invoice in invoices.items %}
+               <tr
+                  class="block bg-white/80 border border-slate-200/80 rounded-lg shadow-sm md:table-row md:border-0 md:shadow-none md:border-b md:rounded-none hover:bg-slate-50/50 transition-colors">
+                  <td class="flex items-center justify-between p-3 border-b md:table-cell md:border-none">
+                     <span class="md:hidden text-xs font-bold uppercase text-slate-500">Invoice No.</span>
+                     <span class="font-semibold text-slate-800 text-right">{{ invoice.invoice_number }}</span>
+                  </td>
+                  <td class="flex items-center justify-between p-3 border-b md:table-cell md:border-none">
+                     <span class="md:hidden text-xs font-bold uppercase text-slate-500">Date</span>
+                     <span class="text-sm text-right text-slate-600">{{ invoice.submission_date.strftime('%d-%b-%Y')
+                        }}</span>
+                  </td>
+                  <td class="block p-3 border-b md:table-cell md:border-none">
+                     <span class="md:hidden text-xs font-bold uppercase text-slate-500">Description</span>
+                     <p class="text-sm text-slate-700 mt-1 md:mt-0 md:truncate" title="{{ invoice.description }}">{{
+                        invoice.description }}</p>
+                  </td>
+                  <td class="flex items-center justify-between p-3 border-b md:table-cell md:border-none">
+                     <span class="md:hidden text-xs font-bold uppercase text-slate-500">Amount</span>
+                     <span class="text-sm font-semibold text-right text-slate-800">₹ {{
+                        "%.2f"|format(invoice.invoice_amount) }}</span>
+                  </td>
+                  <td class="flex items-center justify-between p-3 border-b md:table-cell md:border-none">
+                     <span class="md:hidden text-xs font-bold uppercase text-slate-500">Status</span>
+                     <span class="px-2 py-1 text-xs font-semibold leading-tight rounded-full 
+                                {% if invoice.status == 'Paid' %} text-emerald-700 bg-emerald-100 
+                                {% elif invoice.status == 'Approved' %} text-blue-600 bg-blue-100 
+                                {% elif invoice.status == 'Rejected' %} text-rose-700 bg-rose-100 
+                                {% else %} text-amber-700 bg-amber-100 
+                                {% endif %}">
+                        {{ invoice.status }}
+                     </span>
+                  </td>
+                  <td class="flex items-center justify-between p-3 md:table-cell">
+                     <span class="md:hidden text-xs font-bold uppercase text-slate-500">File</span>
+                     {% if invoice.file_path %}
+                     <a href="{{ url_for('main.download_invoice', filename=invoice.file_path) }}" target="_blank"
+                        class="text-indigo-600 hover:underline hover:text-indigo-800 font-medium text-sm">
+                        View File
+                     </a>
+                     {% endif %}
+                  </td>
+               </tr>
+               {% endfor %}
+               {% else %}
+               <tr>
+                  <td colspan="6" class="px-4 py-16 text-center text-slate-500">
+                     <p class="text-lg font-semibold">No Invoices Found</p>
+                     <p class="text-sm mt-1">
+                        {% if request.args.get('q') %}
+                        Your search for "{{ request.args.get('q') }}" did not match any invoices.
+                        {% else %}
+                        There are no invoices to display at the moment.
+                        {% endif %}
+                     </p>
+                  </td>
+               </tr>
+               {% endif %}
+            </tbody>
+         </table>
+      </div>
+
+      {% if invoices and invoices.pages > 1 %}
+      <div class="flex flex-col sm:flex-row justify-between items-center mt-6 pt-4 border-t border-slate-200/80">
+         <span class="text-sm text-slate-600 mb-4 sm:mb-0">
+            Showing <strong>{{ (invoices.page - 1) * invoices.per_page + 1 }}</strong> to <strong>{{ (invoices.page - 1)
+               * invoices.per_page + invoices.items|length }}</strong> of <strong>{{ invoices.total }}</strong> results
+         </span>
+         <nav class="flex items-center -space-x-px">
+            <a href="{{ url_for('main.all_invoices', page=invoices.prev_num, q=request.args.get('q', '')) if invoices.has_prev else '#' }}"
+               class="px-3 py-2 ml-0 leading-tight text-slate-500 bg-white border border-slate-300 rounded-l-lg hover:bg-slate-100 hover:text-slate-700 {% if not invoices.has_prev %} opacity-50 cursor-not-allowed {% endif %}">
+               Previous
+            </a>
+            {% for page_num in invoices.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+            <a href="{{ url_for('main.all_invoices', page=page_num, q=request.args.get('q', '')) }}"
+               class="px-4 py-2 leading-tight border border-slate-300 {{ 'bg-indigo-50 text-indigo-600 font-semibold' if page_num == invoices.page else 'bg-white text-slate-500 hover:bg-slate-100' }}">
+               {{ page_num }}
+            </a>
+            {% else %}
+            <span class="px-4 py-2 leading-tight text-slate-500 bg-white border border-slate-300">...</span>
+            {% endif %}
+            {% endfor %}
+            <a href="{{ url_for('main.all_invoices', page=invoices.next_num, q=request.args.get('q', '')) if invoices.has_next else '#' }}"
+               class="px-3 py-2 leading-tight text-slate-500 bg-white border border-slate-300 rounded-r-lg hover:bg-slate-100 hover:text-slate-700 {% if not invoices.has_next %} opacity-50 cursor-not-allowed {% endif %}">
+               Next
+            </a>
+         </nav>
+      </div>
+      {% endif %}
+   </div>
+</div>
+
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+      const searchInput = document.querySelector('input[name="q"]');
+      if (searchInput) {
+         const baseSearchURL = window.location.protocol + "//" + window.location.host + window.location.pathname;
+         searchInput.addEventListener('input', function () {
+            if (searchInput.value.trim() === '') {
+               window.location.href = baseSearchURL;
+            }
+         });
+      }
+   });
+</script>
+{% endblock %}

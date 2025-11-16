@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Messages{% endblock %}
+{% block page_title %}Messages{% endblock %}
+
+{% block content %}
+<!-- Chat UI Container -->
+<div class="bg-white rounded-lg shadow-lg h-[calc(100vh-10rem)] flex">
+
+    <!-- Left Pane: Contacts List -->
+    <div class="w-full md:w-1/3 lg:w-1/4 border-r border-gray-200 flex flex-col">
+        <!-- Search Bar -->
+        <div class="p-4 border-b border-gray-200">
+            <input type="text" placeholder="Search contacts..."
+                class="w-full px-4 py-2 rounded-lg bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <!-- Contacts -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- Contact 1 (Active) -->
+            <a href="#" class="flex items-center p-4 bg-blue-50 border-l-4 border-blue-500">
+                <img class="h-12 w-12 rounded-full object-cover"
+                    src="https://placehold.co/100x100/E2E8F0/4A5568?text=AP" alt="Ankit Sharma">
+                <div class="ml-4 flex-1">
+                    <div class="flex justify-between items-center">
+                        <p class="font-semibold text-gray-800">Ankit Sharma</p>
+                        <span class="text-xs text-gray-500">10:30 AM</span>
+                    </div>
+                    <p class="text-sm text-gray-600 truncate">Okay, I will check and get back to you.</p>
+                </div>
+            </a>
+            <!-- Contact 2 -->
+            <a href="#" class="flex items-center p-4 hover:bg-gray-50 transition duration-200">
+                <img class="h-12 w-12 rounded-full object-cover"
+                    src="https://placehold.co/100x100/CBD5E0/4A5568?text=RS" alt="Ravi Kumar">
+                <div class="ml-4 flex-1">
+                    <div class="flex justify-between items-center">
+                        <p class="font-semibold text-gray-800">Ravi Kumar</p>
+                        <span class="text-xs text-gray-500">Yesterday</span>
+                    </div>
+                    <p class="text-sm text-gray-600 truncate">The material has been dispatched.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Right Pane: Chat Window -->
+    <div class="flex-1 flex flex-col">
+        <!-- Chat Header -->
+        <div class="flex items-center p-4 border-b border-gray-200">
+            <img class="h-12 w-12 rounded-full object-cover" src="https://placehold.co/100x100/E2E8F0/4A5568?text=AP"
+                alt="Ankit Sharma">
+            <div class="ml-4">
+                <p class="text-lg font-semibold text-gray-800">Ankit Sharma</p>
+                <p class="text-sm text-green-500">Online</p>
+            </div>
+        </div>
+
+        <!-- Message Area -->
+        <div id="message-area" class="flex-1 p-6 overflow-y-auto">
+            <!-- Received Message -->
+            <div class="flex mb-4">
+                <div class="flex-shrink-0">
+                    <img class="h-10 w-10 rounded-full object-cover"
+                        src="https://placehold.co/100x100/E2E8F0/4A5568?text=AP" alt="Ankit Sharma">
+                </div>
+                <div class="ml-3">
+                    <div class="bg-gray-200 p-3 rounded-lg rounded-tl-none">
+                        <p class="text-sm text-gray-800">Hello, I have a query regarding the invoice
+                            INV-2025-071. Can you please check the status?</p>
+                    </div>
+                    <span class="text-xs text-gray-500 mt-1">10:28 AM</span>
+                </div>
+            </div>
+
+            <!-- Sent Message -->
+            <div class="flex justify-end mb-4">
+                <div class="mr-3 text-right">
+                    <div class="bg-blue-500 text-white p-3 rounded-lg rounded-br-none">
+                        <p class="text-sm">Sure, let me check that for you. One moment please.</p>
+                    </div>
+                    <span class="text-xs text-gray-500 mt-1">10:29 AM</span>
+                </div>
+                <div class="flex-shrink-0">
+                    <img class="h-10 w-10 rounded-full object-cover"
+                        src="https://placehold.co/100x100/4A5568/E2E8F0?text=V" alt="Vendor">
+                </div>
+            </div>
+        </div>
+
+        <!-- Message Input -->
+        <div class="p-4 bg-gray-50 border-t border-gray-200">
+            <div class="flex items-center">
+                <input type="text" placeholder="Type your message..."
+                    class="flex-1 px-4 py-3 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button
+                    class="ml-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Auto-scroll to the bottom of the message area
+    const messageArea = document.getElementById('message-area');
+    if (messageArea) {
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
+</script>
+{% endblock %}
