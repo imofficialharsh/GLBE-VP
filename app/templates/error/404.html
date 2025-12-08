@@ -8,7 +8,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
         :root {
-            --brand-color: #4f46e5; /* Your original Indigo */
+            --brand-color: #4f46e5;
             --brand-color-dark: #4338ca;
             --text-primary: #111827;
             --text-secondary: #4b5563;
@@ -59,8 +59,7 @@
         }
 
         .subtitle {
-            font-size: 2.5rem; /* 40px */
-            margin-top: 0;
+            font-size: 2.5rem;
             margin-bottom: 20px;
             font-weight: 700;
             color: var(--text-primary);
@@ -71,7 +70,7 @@
             margin: 0 0 30px;
             line-height: 1.6;
             color: var(--text-secondary);
-            font-size: 1.1rem; /* 18px */
+            font-size: 1.1rem;
         }
 
         .btn {
@@ -95,7 +94,7 @@
             box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
         }
         
-        /* Make it stack on small screens */
+
         @media (max-width: 768px) {
             .container {
                 flex-direction: column-reverse;
@@ -116,10 +115,9 @@
             }
         }
 
-        /* --- NEW ANIMATION --- */
-        /* This is the new dot we added */
+        
         #orbiting-dot {
-            /* Set the center of rotation to the planet's center (27, 27) */
+
             transform-origin: 27px 27px;
             animation: orbit 6s linear infinite;
         }
@@ -132,7 +130,7 @@
                 transform: rotate(360deg);
             }
         }
-        /* --- END NEW ANIMATION --- */
+
 
     </style>
 </head>

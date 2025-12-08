@@ -619,20 +619,20 @@
         </form>
     
         <script>
-            // --- Modern Toast Notification Handling ---
+            // --- MODERN TOAST NOTIFICATION HANDLING ---
+            
             // Function to close a toast
             window.closeToast = (toastId) => {
                 const toast = document.getElementById(toastId);
                 if (toast) {
-                    // Animate Out
+
                     toast.classList.add('opacity-0', 'translate-x-full');
                     setTimeout(() => {
                         toast.remove();
-                    }, 300); // Match animation duration
+                    }, 300);
                 }
             };
 
-            // Replaced the old showModal with this new toast function
             const showModal = (message) => {
                 const toastContainer = document.getElementById('toast-container');
                 if (!toastContainer) return;
@@ -640,7 +640,7 @@
                 const toastId = 'toast-' + Date.now();
                 const toast = document.createElement('div');
                 toast.id = toastId;
-                // Added Tailwind classes for entrance animation
+
                 toast.className = 'max-w-sm w-full bg-red-600 text-white p-4 rounded-lg shadow-2xl flex items-start space-x-3 transition-all duration-300 ease-in-out transform translate-x-full opacity-0';
 
                 toast.innerHTML = `
@@ -664,25 +664,25 @@
 
                 toastContainer.appendChild(toast);
 
-                // Animate In
+
                 requestAnimationFrame(() => {
                     toast.classList.remove('translate-x-full', 'opacity-0');
                     toast.classList.add('translate-x-0', 'opacity-100');
                 });
 
-                // Auto-dismiss
+
                 setTimeout(() => {
                     window.closeToast(toastId);
-                }, 5000); // 5 seconds
+                }, 5000);
             };
-            // --- END Toast Notification Handling ---
+
 
 
             // --- Real-time PAN and GST Validation ---
             function setupFieldValidation(inputId, verifiedIconId, invalidIconId, regex) {
                 const inputField = document.getElementById(inputId);
                 const verifiedIcon = document.getElementById(verifiedIconId);
-                const invalidIcon = document.getElementById(invalidIconId); // Get the invalid icon element
+                const invalidIcon = document.getElementById(invalidIconId);
 
                 if (!inputField) return;
 
@@ -690,23 +690,22 @@
                     this.value = this.value.toUpperCase();
                     const value = this.value;
 
-                    // Reset all validation styles and hide both icons
                     this.classList.remove('border-green-500', 'focus:ring-green-500', 'border-red-500', 'focus:ring-red-500');
                     if (verifiedIcon) verifiedIcon.classList.add('hidden');
-                    if (invalidIcon) invalidIcon.classList.add('hidden'); // Hide invalid icon too
+                    if (invalidIcon) invalidIcon.classList.add('hidden');
 
                     if (value.length === 0) {
                         return;
                     }
 
                     if (regex.test(value)) {
-                        // Valid: show green outline and verified icon
+
                         this.classList.add('border-green-500', 'focus:ring-green-500');
                         if (verifiedIcon) verifiedIcon.classList.remove('hidden');
                     } else {
-                        // Invalid: show red outline and invalid icon
+
                         this.classList.add('border-red-500', 'focus:ring-red-500');
-                        if (invalidIcon) invalidIcon.classList.remove('hidden'); // Show invalid icon
+                        if (invalidIcon) invalidIcon.classList.remove('hidden');
                     }
                 });
             }
@@ -719,11 +718,6 @@
             setupFieldValidation('pan-input', 'pan-verified-icon', 'pan-invalid-icon', panRegex);
             setupFieldValidation('gst-input', 'gst-verified-icon', 'gst-invalid-icon', gstRegex);
 
-            // --- Set Signature Date to Today ---
-            const sigDate = document.getElementById('signature_date');
-            if (sigDate && !sigDate.value) {
-                sigDate.valueAsDate = new Date();
-            }
 
             // --- Conditional "Type of Firm" Text Field ---
             const firmTypeRadios = document.querySelectorAll('.firm-type-radio');
@@ -770,7 +764,7 @@
                             // If the checkbox is checked, copy the value from the office field to the GST field.
                             if (this.checked) {
                                 destinationField.value = sourceField.value;
-                                destinationField.readOnly = true; // Make the GST field non-editable
+                                destinationField.readOnly = true;
                             } else {
                                 // If the checkbox is unchecked, clear the GST field and make it editable again.
                                 destinationField.value = '';
@@ -822,7 +816,7 @@
                     const resetFileInput = () => {
                         fileInput.value = '';
                         dropZone.classList.remove('border-green-500', 'bg-green-50', 'border-red-500', 'border-indigo-400', 'bg-indigo-50/80');
-                        dropZone.classList.add('border-red-500', 'border-dashed'); // Keep red border
+                        dropZone.classList.add('border-red-500', 'border-dashed');
                         dropZone.innerHTML = initialDropZoneHTML;
                         previewContainer.innerHTML = '';
                         previewContainer.classList.add('hidden');
@@ -849,7 +843,7 @@
                         dataTransfer.items.add(file);
                         fileInput.files = dataTransfer.files;
 
-                        dropZone.classList.remove('border-red-500', 'border-dashed'); // Remove red border on success
+                        dropZone.classList.remove('border-red-500', 'border-dashed');
                         dropZone.classList.add('border-green-500', 'bg-green-50');
                         dropZone.innerHTML = `
                             <div class="space-y-1 text-center py-4">
@@ -902,7 +896,6 @@
                         }
                     });
                 });
-                // --- END File Upload Logic ---
             });
 
             // --- Conditional "Miscellaneous" Category Text Field ---
@@ -922,6 +915,12 @@
                 }
             });
 
+            // --- Set Signature Date to Today ---
+            const sigDate = document.getElementById('signature_date');
+            if (sigDate && !sigDate.value) {
+                sigDate.valueAsDate = new Date();
+            }
+
         </script>
     
         <style>
@@ -930,9 +929,8 @@
             #ifsc-input::placeholder {
                 text-transform: none;
             }
-    
+        
             .form-section {
-                /* Updated for semi-transparent background */
                 background-color: rgba(255, 255, 255, 0.7);
                 backdrop-filter: blur(8px);
                 padding: 1.5rem;
@@ -940,7 +938,7 @@
                 box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
                 margin-bottom: 1.5rem;
             }
-    
+        
             .form-section-title {
                 font-size: 1.25rem;
                 font-weight: 600;
@@ -949,7 +947,7 @@
                 padding-bottom: 0.75rem;
                 margin-bottom: 1.5rem;
             }
-    
+        
             .form-label {
                 display: block;
                 margin-bottom: 0.5rem;
@@ -957,7 +955,7 @@
                 font-weight: 500;
                 color: #374151;
             }
-    
+        
             .form-input {
                 width: 100%;
                 padding: 0.75rem 1rem;
@@ -965,19 +963,19 @@
                 background-color: #f9fafb;
                 border: 1px solid #d1d5db;
             }
-    
+        
             fieldset:disabled .form-input,
             fieldset:disabled input[type='radio'],
             fieldset:disabled input[type='checkbox'] {
                 background-color: #e5e7eb;
                 cursor: not-allowed;
             }
-    
+        
             .form-input:read-only {
                 background-color: #eaeaec;
                 cursor: not-allowed;
             }
-    
+        
             .form-input:required:invalid {
                 border-color: #ef4444;
             }

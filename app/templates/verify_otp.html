@@ -12,7 +12,6 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Hide number input arrows */
         .otp-input::-webkit-outer-spin-button,
         .otp-input::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -28,7 +27,7 @@
 <body class="bg-gray-50">
 
     <div class="flex min-h-screen">
-        <!-- Left Image Panel -->
+
         <div class="hidden lg:flex relative flex-col justify-between w-1/2 p-12 bg-gray-800 text-white" style="background-image: url('https://images.pexels.com/photos/2138126/pexels-photo-2138126.jpeg'); background-size: cover; background-position: center;">
             <div class="z-10 relative">
                 <h1 class="text-3xl font-bold tracking-wider">GLBE VENDOR PORTAL</h1>
@@ -40,7 +39,7 @@
              <div class="absolute inset-0 bg-black opacity-50 z-0"></div>
         </div>
 
-        <!-- Right Form Panel -->
+
         <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
             <div class="w-full max-w-md">
                 <div class="text-center lg:text-left mb-10">
@@ -61,10 +60,10 @@
                 <form id="otp-form" method="POST" novalidate class="space-y-6">
                     {{ form.hidden_tag() }}
                     
-                    <!-- Interactive OTP Field -->
+
                     <div>
                         {{ form.otp.label(class="block text-sm font-medium text-gray-700 mb-2") }}
-                        <!-- This hidden input will hold the combined OTP value for submission -->
+
                         {{ form.otp(id="otp-hidden-input", class="hidden") }}
                         <div id="otp-container" class="flex justify-between items-center space-x-2">
                             <input type="number" inputmode="numeric" class="otp-input w-12 h-14 text-center text-2xl font-bold rounded-lg bg-gray-50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" maxlength="1">
@@ -192,12 +191,11 @@
 
             resendLink.addEventListener('click', (e) => {
                 e.preventDefault();
-                // In a real app, you would make an API call here to resend the OTP
+                // In a real app, you would make an API call here to resend the OTP //
                 console.log('Resending OTP...');
                 startResendTimer();
             });
 
-            // Start the timer when the page loads
             startResendTimer();
         });
     </script>

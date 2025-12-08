@@ -290,7 +290,7 @@
 
 
         <div class="bg-white/70 backdrop-blur-sm p-6 md:p-8 rounded-xl border border-slate-200 mt-8">
-            <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-6">
+            <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-slate-800">Recent Invoice History</h2>
                 {% if invoices %}
                 <a href="/all-invoices"
@@ -425,7 +425,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
 
-        // --- NEW: Guidelines Toggle Logic ---
+        // --- Guidelines Toggle Logic ---
         const guidelinesToggle = document.getElementById('guidelines-toggle');
         const guidelinesList = document.getElementById('guidelines-list');
         const guidelinesChevron = document.getElementById('guidelines-chevron');
@@ -444,7 +444,7 @@
         // If the form doesn't exist (because user is not registered),
         const form = document.getElementById('invoice-upload-form');
 
-        // stop running this script to avoid errors.
+        // stop running this script to avoid errors
         if (!form) {
             return;
         }
@@ -452,7 +452,7 @@
         const dropZone = document.getElementById('file-drop-zone');
         const fileInput = document.getElementById('invoice_file_input');
 
-        // NEW: Preview container element
+        // Preview container element
         const previewContainer = document.getElementById('file-preview-container');
 
         // Modal elements
@@ -483,7 +483,7 @@
             }
         });
 
-        // --- NEW: Function to render file preview ---
+        // --- Function to render file preview ---
         const renderPreview = (file) => {
             const reader = new FileReader();
 
@@ -513,7 +513,6 @@
         const handleFile = (file) => {
             if (!file) return;
 
-            // Reset border color in case it was red
             dropZone.classList.remove('border-red-500');
             dropZone.classList.add('border-slate-300');
 
@@ -534,7 +533,7 @@
             dataTransfer.items.add(file);
             fileInput.files = dataTransfer.files;
 
-            // --- UI Change for Upload Success ---
+
             dropZone.classList.remove('border-slate-300', 'border-dashed', 'border-indigo-400', 'bg-blue-50');
             dropZone.classList.add('border-green-500', 'bg-green-50');
             dropZone.innerHTML = `
@@ -547,7 +546,7 @@
                 </div>
             `;
 
-            // NEW: Render the preview
+            //Render the preview
             renderPreview(file);
 
             document.getElementById('remove-file-btn').addEventListener('click', (e) => {
@@ -562,7 +561,7 @@
             dropZone.classList.add('border-slate-300', 'border-dashed');
             dropZone.innerHTML = initialDropZoneHTML;
 
-            // NEW: Clear and hide the preview container
+            //Clear and hide the preview container
             previewContainer.innerHTML = '';
             previewContainer.classList.add('hidden');
         };

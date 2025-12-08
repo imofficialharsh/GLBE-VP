@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}Notifications{% endblock %}
-{% block page_title %}All Notifications{% endblock %}
+{% block page_title %}Notifications{% endblock %}
 
 {% block content %}
 <style>
@@ -60,7 +60,7 @@
         <div class="bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 max-w-7xl mx-auto">
             <div class="p-6 border-b border-slate-200">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold text-gray-800">Your Notifications</h2>
+                    <h2 class="text-2xl font-bold text-slate-800">Your Notifications</h2>
                     {% if notifications %}
                     <button id="mark-all-read-btn" type="button"
                         class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors">
@@ -162,12 +162,10 @@
         const emptyMessage = document.getElementById('no-notifications-message');
         const markAllReadBtn = document.getElementById('mark-all-read-btn');
 
-        // --- Tab Filtering Logic ---
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const filter = tab.getAttribute('data-filter');
 
-                // Update tab visual state
                 tabs.forEach(t => {
                     t.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm');
                     t.classList.add('text-slate-600', 'hover:bg-slate-200');
@@ -189,7 +187,6 @@
                     }
                 });
 
-                // Show or hide the 'empty' message
                 if (visibleItems === 0) {
                     emptyMessage.style.display = 'block';
                 } else {
@@ -198,23 +195,20 @@
             });
         });
 
-        // --- NEW: Mark All as Read Logic ---
+        //Mark All as Read Logic ---
         if (markAllReadBtn) {
             markAllReadBtn.addEventListener('click', () => {
                 const unreadItems = document.querySelectorAll('.notification-item.unread');
                 
                 unreadItems.forEach(item => {
-                    // Remove unread background
                     item.classList.remove('bg-blue-50/50', 'unread');
                     
-                    // Hide the blue dot
                     const unreadDot = item.querySelector('.unread-dot');
                     if (unreadDot) {
                         unreadDot.style.display = 'none';
                     }
                 });
 
-                // In a real app, you would also send a request to the server here.
             });
         }
     });

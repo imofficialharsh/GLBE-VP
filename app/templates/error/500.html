@@ -8,12 +8,12 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display.swap');
 
         :root {
-            --brand-color: #4f46e5; /* Your original Indigo */
+            --brand-color: #4f46e5;
             --brand-color-dark: #4338ca;
             --text-primary: #111827;
             --text-secondary: #4b5563;
             --bg-light: #f9fafb;
-            --error-color: #dc2626; /* Red for the error symbol */
+            --error-color: #dc2626;
             --gear-color: #d1d5db;
         }
 
@@ -97,7 +97,7 @@
             box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
         }
         
-        /* Make it stack on small screens */
+
         @media (max-width: 768px) {
             .container {
                 flex-direction: column-reverse;
@@ -118,8 +118,6 @@
             }
         }
 
-        /* --- NEW ANIMATION --- */
-        /* This makes the main gear rock back and forth */
         #stuck-gear {
             transform-origin: center;
             animation: rock 4s ease-in-out infinite;
@@ -136,7 +134,7 @@
                 transform: rotate(-5deg);
             }
         }
-        /* --- END NEW ANIMATION --- */
+
 
     </style>
 </head>

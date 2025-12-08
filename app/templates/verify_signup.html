@@ -169,7 +169,6 @@
             // --- Resend OTP Timer Logic ---
             const startResendTimer = () => {
                 let timeLeft = 30;
-                // Disable the link and change its style
                 resendLink.style.pointerEvents = 'none';
                 resendLink.classList.add('text-gray-400', 'hover:text-gray-400');
                 resendLink.classList.remove('text-blue-600', 'hover:text-blue-700');
@@ -182,7 +181,7 @@
                     if (timeLeft <= 0) {
                         clearInterval(resendInterval);
                         resendTimerSpan.textContent = '';
-                        // Re-enable the link
+
                         resendLink.style.pointerEvents = 'auto';
                         resendLink.classList.remove('text-gray-400', 'hover:text-gray-400');
                         resendLink.classList.add('text-blue-600', 'hover:text-blue-700');
@@ -192,12 +191,11 @@
 
             resendLink.addEventListener('click', (e) => {
                 e.preventDefault();
-                // TODO: Add an API call here to your backend to resend the OTP
+                // Add an API call here to your backend to resend the OTP //
                 console.log('Resending OTP...');
                 startResendTimer();
             });
 
-            // Start the timer automatically when the page loads
             startResendTimer();
         });
     </script>

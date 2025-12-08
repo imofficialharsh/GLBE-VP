@@ -14,12 +14,10 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* This makes the text the user types uppercase */
         #pan-input {
             text-transform: uppercase;
         }
 
-        /* This specifically targets the placeholder and resets its transformation to normal */
         #pan-input::placeholder {
             text-transform: none;
         }
@@ -162,14 +160,12 @@
                 confirmPasswordInput.classList.remove('border-green-500', 'focus:ring-green-500', 'border-red-500', 'focus:ring-red-500');
 
                 if (confirmPass.length === 0) {
-                    return; // Don't show any color if the field is empty
+                    return;
                 }
 
                 if (pass === confirmPass) {
-                    // Add green border
                     confirmPasswordInput.classList.add('border-green-500', 'focus:ring-green-500');
                 } else {
-                    // Add red border
                     confirmPasswordInput.classList.add('border-red-500', 'focus:ring-red-500');
                 }
             }
@@ -211,7 +207,7 @@
             setupPasswordToggle('confirm-password', 'toggle-confirm-password');
         });
 
-        // --- ADD THIS SCRIPT FOR PAN VALIDATION ---
+        // --- PAN VALIDATION ---
         const panInput = document.getElementById('pan-input');
         const panVerifiedIcon = document.getElementById('pan-verified-icon');
         const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
@@ -222,21 +218,18 @@
                 this.value = this.value.toUpperCase();
                 const panValue = this.value;
 
-                // Reset styling
                 this.classList.remove('border-green-500', 'focus:ring-green-500', 'border-red-500', 'focus:ring-red-500');
                 panVerifiedIcon.classList.add('hidden');
 
                 if (panValue.length === 0) {
-                    return; // Don't validate if the field is empty
+                    return;
                 }
 
                 if (panRegex.test(panValue)) {
-                    // If PAN is valid, show green outline and verified icon
                     this.classList.add('border-green-500', 'focus:ring-green-500');
                     panVerifiedIcon.classList.remove('hidden');
 
                 } else {
-                    // If PAN is invalid, show red outline
                     this.classList.add('border-red-500', 'focus:ring-red-500');
                 }
             });

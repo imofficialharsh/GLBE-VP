@@ -75,9 +75,9 @@
       {% endif %}
       {% endwith %}
 
-      <!-- FAQ Section (Unchanged) -->
+      <!-- FAQ Section -->
       <div class="bg-white/70 backdrop-blur-sm p-6 md:p-8 rounded-xl border border-slate-200">
-         <h2 class="text-2xl font-bold text-slate-800 mb-6">Frequently Asked Questions</h2>
+         <h2 class="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-200 pb-3">Frequently Asked Questions</h2>
          <div class="space-y-4" id="faq-accordion">
             <div class="accordion-item border-b border-slate-200 pb-4">
                <button
@@ -154,10 +154,10 @@
          </div>
       </div>
 
-      <!-- Support Contact Info (Unchanged) -->
+      <!-- Support Contact Info -->
       <div
          class="bg-white/70 backdrop-blur-sm p-6 md:p-8 rounded-xl border border-slate-200 flex flex-col justify-center">
-         <h2 class="text-3xl font-bold text-slate-800 mb-4">Can't Find Your Answer?</h2>
+         <h2 class="text-2xl font-bold text-slate-800 mb-4">Can't Find Your Answer?</h2>
          <p class="text-slate-700 text-lg mb-6">
             If the FAQs didn't resolve your issue, our support team is here to help. Please describe your problem in
             detail using the form below, and we'll get back to you within 24 business hours.
@@ -171,11 +171,10 @@
 
       <!-- Raise a Ticket Section -->
       <div class="bg-white/70 backdrop-blur-sm p-6 md:p-8 rounded-xl border border-slate-200">
-         <h2 class="text-2xl font-bold text-slate-800 mb-6">Raise a Ticket</h2>
+         <h2 class="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-200 pb-3">Raise a Ticket</h2>
          <form action="{{ url_for('main.help_support') }}" method="POST" novalidate class="space-y-6">
             {{ form.hidden_tag() }}
 
-            <!-- Category Dropdown -->
             <div>
                {{ form.category.label(class="block text-sm font-medium text-slate-700 mb-2") }}
                {{ form.category(class="w-full px-4 py-3 rounded-lg bg-white/50 border border-slate-300
@@ -183,7 +182,6 @@
                {% for error in form.category.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
             </div>
 
-            <!-- Conditional Invoice No. Field -->
             <div id="invoice-no-container" class="hidden transition-all duration-300">
                {{ form.invoice_no.label(class="block text-sm font-medium text-slate-700 mb-2") }}
                {{ form.invoice_no(class="w-full px-4 py-3 rounded-lg bg-white/50 border border-slate-300
@@ -192,7 +190,6 @@
                {% for error in form.invoice_no.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
             </div>
 
-            <!-- Subject Field -->
             <div>
                {{ form.subject.label(class="block text-sm font-medium text-slate-700 mb-2") }}
                {{ form.subject(class="w-full px-4 py-3 rounded-lg bg-white/50 border border-slate-300 focus:outline-none
@@ -200,7 +197,6 @@
                {% for error in form.subject.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
             </div>
 
-            <!-- Message Field -->
             <div>
                {{ form.message.label(class="block text-sm font-medium text-slate-700 mb-2") }}
                {{ form.message(rows="5", class="w-full px-4 py-3 rounded-lg bg-white/50 border border-slate-300
@@ -208,7 +204,6 @@
                {% for error in form.message.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
             </div>
 
-            <!-- Submit Button -->
             <div class="text-right pt-2">
                {{ form.submit(class="inline-flex justify-center rounded-lg border border-transparent bg-red-600 py-3
                px-8 font-semibold text-white shadow-sm hover:bg-red-700 transition-colors cursor-pointer") }}
@@ -216,7 +211,7 @@
          </form>
       </div>
 
-      <!-- Ticket History Section - UPDATED (Display full ticket ID) -->
+      <!-- Ticket History Section -->
       <div class="bg-white/70 backdrop-blur-sm p-6 md:p-8 rounded-xl border border-slate-200">
          <h2 class="text-2xl font-bold text-slate-800 mb-6">Ticket History</h2>
          <div class="overflow-x-auto">
@@ -307,7 +302,8 @@
 
 <script>
    document.addEventListener('DOMContentLoaded', function () {
-      // --- Accordion Logic (Existing) ---
+      
+      // --- Accordion Logic ---
       const accordion = document.getElementById('faq-accordion');
       if (accordion) {
          const accordionButtons = accordion.querySelectorAll('.accordion-btn');
@@ -321,7 +317,7 @@
          });
       }
 
-      // --- Ticket Form Logic (Existing - handles conditional Invoice No.) ---
+      // --- Ticket Form Logic (handles conditional Invoice No.) ---
       const categorySelect = document.getElementById('category');
       const invoiceNoContainer = document.getElementById('invoice-no-container');
       const invoiceNoInput = document.getElementById('invoice-no');
@@ -335,12 +331,12 @@
             } else {
                invoiceNoContainer.classList.add('hidden');
                invoiceNoInput.removeAttribute('required');
-               const errorSpan = invoiceNoInput.nextElementSibling; // Assuming error span is next sibling AFTER the <p> tag
+               const errorSpan = invoiceNoInput.nextElementSibling;
                if (errorSpan && errorSpan.classList.contains('error-text')) {
-                  errorSpan.textContent = ''; // Clear server-side error if category changes
+                  errorSpan.textContent = '';
                }
                if (!invoiceNoInput.validity.valid) {
-                  invoiceNoInput.setCustomValidity(''); // Clear custom validity message if any
+                  invoiceNoInput.setCustomValidity('');
                }
             }
          }
