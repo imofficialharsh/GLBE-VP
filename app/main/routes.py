@@ -30,7 +30,7 @@ def save_file(file, subfolder):
 
     filename = secure_filename(file.filename)
 
-    # File Extension Validation ---
+    # --- File Extension Validation ---
     allowed_extensions = current_app.config.get('ALLOWED_EXTENSIONS', {'pdf', 'png', 'jpg', 'jpeg', 'docx'})
     if '.' not in filename or filename.rsplit('.', 1)[1].lower() not in allowed_extensions:
         flash(f"Invalid file type for {filename}. Allowed types: {', '.join(allowed_extensions)}", 'error')
@@ -51,7 +51,7 @@ def save_file(file, subfolder):
         flash(f"Invalid file content for {filename}. File appears to be a '{mime_type}' but only {', '.join(allowed_mime_types)} are allowed.", 'error')
         return None
 
-    # File Size Validation ---
+    # --- File Size Validation ---
     max_size = current_app.config.get('MAX_FILE_SIZE_MB', 5) * 1024 * 1024
     file.seek(0, os.SEEK_END)
     file_length = file.tell()
@@ -60,7 +60,7 @@ def save_file(file, subfolder):
          flash(f"File '{filename}' exceeds the maximum size limit of {max_size / (1024*1024)}MB.", 'error')
          return None
 
-    # Unique Filename and Saving ---
+    # --- Unique Filename and Saving ---
     unique_filename = f"{uuid.uuid4().hex}_{filename}"
     target_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], subfolder)
     os.makedirs(target_dir, exist_ok=True)
@@ -174,10 +174,10 @@ def dashboard():
 
         utc_timestamp = inv.payment_date if inv.status == 'Paid' and inv.payment_date else inv.submission_date
 
-        # 4. CONVERT IT TO LOCAL TIME
-        local_timestamp = utc_timestamp # Default
+        # Convert it to Localtime
+        local_timestamp = utc_timestamp
         if utc_timestamp:
-            # Tell Python the time is UTC, then convert to your local timezone
+            # Telling Python the time is UTC, then convert to your local timezone
             local_timestamp = utc_timestamp.replace(tzinfo=pytz.utc).astimezone(local_tz)
 
         recent_activities.append({
@@ -279,18 +279,15 @@ def upload_invoices():
                         current_app.logger.error(f"Error saving invoice for user {user.id}: {e}\n{traceback.format_exc()}")
                         flash('An error occurred while saving the invoice. Please try again.', 'error')
 
-                        # Attempt to delete the orphaned file if DB save fails
+                        # Attempting to delete the orphaned file if DB save fails
                         file_to_delete = os.path.join(current_app.config['UPLOAD_FOLDER'], 'invoices', saved_filename)
                         if os.path.exists(file_to_delete):
                             try:
                                 os.remove(file_to_delete)
                             except OSError as os_err:
                                 current_app.logger.error(f"Error deleting invoice file {file_to_delete} after DB error: {os_err}")
-                # else:
-                #     # Added this to handle if save_file itself fails
-                #     flash('There was an error processing the uploaded file.', 'error')
 
-    # Fetch recent invoices for history
+    # Fetching recent invoices for history
     recent_invoices = Invoice.query.filter_by(user_id=user.id).order_by(Invoice.submission_date.desc()).limit(5).all()
     return render_template('upload-invoices.html', form=form, invoices=recent_invoices, is_registered=is_registered)
 
@@ -333,6 +330,8 @@ def _clean_up_files(filenames, subfolder):
                 except OSError as os_err:
                     current_app.logger.error(f"Error deleting vendor doc {filepath} after DB error: {os_err}")
 
+
+##
 def _save_material_form(form, user_id):
     """
     [HELPER] Processes file saving and DB creation for Material Vendor.
@@ -413,6 +412,8 @@ def _save_material_form(form, user_id):
         _clean_up_files(all_filenames, 'vendor_docs')
         return False
 
+
+##
 def _save_work_form(form, user_id):
     """
     [HELPER] Processes file saving and DB creation for Work Vendor.
@@ -604,21 +605,23 @@ def help_support():
 # --- File Download Routes ---
 # The logic to check if the file exists AND belongs to the logged-in user
 # (or an admin) is the correct way to prevent Insecure Direct Object Reference (IDOR).
+
+
+## Download vendor document
 @main_bp.route('/download/vendor_doc/<path:filename>')
 @user_or_admin_required
 def download_vendor_doc(filename):
     """
     Securely serves files from the 'vendor_docs' subfolder
     after verifying ownership (or if admin).
+    Now returns 404 Page instead of Redirect loops if file is missing.
     """
     user_id = session.get('user_id')
     is_admin = 'admin_id' in session
 
-    # Sanitize filename (good)
     filename = secure_filename(filename)
     if not filename:
-        flash('Invalid filename.', 'error')
-        return redirect(request.referrer or url_for('main.dashboard'))
+        return render_template('error/404.html'), 404
 
     directory = os.path.join(current_app.config['UPLOAD_FOLDER'], 'vendor_docs')
     
@@ -645,56 +648,58 @@ def download_vendor_doc(filename):
         ).first()
 
         if not owns_material_file and not owns_work_file:
-            flash('You do not have permission to access this file.', 'error')
-            return redirect(url_for('main.dashboard'))
+            return render_template('error/404.html'), 404
     
     file_path = os.path.join(directory, filename)
+
     if not os.path.isfile(file_path):
-        flash('File not found.', 'error')
-        return redirect(request.referrer or url_for('main.dashboard'))
+        current_app.logger.warning(f"User tried to download missing vendor doc: {file_path}")
+        return render_template('error/404.html', 
+                               custom_title="Document Not Found",
+                               custom_message="This vendor document is missing from our storage."), 404
 
     try:
         return send_from_directory(directory, filename, as_attachment=False)
     except Exception as e:
         current_app.logger.error(f"Error serving vendor doc {filename}: {e}")
-        flash('An error occurred while accessing the file.', 'error')
-        return redirect(request.referrer or url_for('main.dashboard'))
+        return render_template('error/500.html'), 500
 
 
+## Download invoice file
 @main_bp.route('/download/invoice/<path:filename>')
 @user_or_admin_required
 def download_invoice(filename):
     """
-    Securely serves files from the 'invoices' subfolder
-    after verifying ownership (or if admin).
+    Securely serves files from the 'invoices' subfolder.
+    Now returns 404 Page instead of Redirect loops if file is missing.
     """
     user_id = session.get('user_id')
     is_admin = 'admin_id' in session
 
     filename = secure_filename(filename)
     if not filename:
-        flash('Invalid filename.', 'error')
-        return redirect(request.referrer or url_for('main.dashboard'))
+        return render_template('error/404.html'), 404
 
-    directory = os.path.join(current_app.config['UPLOAD_FOLDER'], 'invoices')
+    directory = os.path.join(current_app.config['UPLOAD_FOLDER'], 'invoices') #
 
     if not is_admin:
-        invoice = Invoice.query.filter_by(user_id=user_id, file_path=filename).first()
+        invoice = Invoice.query.filter_by(user_id=user_id, file_path=filename).first() #
         if not invoice:
-            flash('You do not have permission to access this file.', 'error')
-            return redirect(url_for('main.dashboard'))
+            return render_template('error/404.html'), 404
     
     file_path = os.path.join(directory, filename)
+
     if not os.path.isfile(file_path):
-        flash('File not found.', 'error')
-        return redirect(request.referrer or url_for('main.dashboard'))
+        current_app.logger.warning(f"User tried to download missing invoice: {file_path}")
+        return render_template('error/404.html', 
+                               custom_title="Invoice Not Found",
+                               custom_message="The invoice file you are trying to download has been deleted from the server."), 404
 
     try:
         return send_from_directory(directory, filename, as_attachment=False)
     except Exception as e:
          current_app.logger.error(f"Error serving invoice file {filename}: {e}")
-         flash('An error occurred while accessing the file.', 'error')
-         return redirect(request.referrer or url_for('main.dashboard'))
+         return render_template('error/500.html'), 500
 
 
 ## --- Error handlers ---
@@ -729,23 +734,24 @@ def internal_server_error(e):
 
 
 
-
-#
-#
-#
-#
 # --- Placeholder routes ---
+# --- Placeholder routes ---
+# --- Placeholder routes ---
+# --- Placeholder routes ---
+# --- Placeholder routes ---
+
+
 @main_bp.route('/messages')
 @login_required
 def messages():
     return render_template('messages.html')
 
 
+# --- Notifications Route ---
 @main_bp.route('/notifications')
 @login_required
 def notifications():
-    # This is fine as a placeholder.
-    # For deployment, you'd replace this with a real DB query.
+    # This is fine as a placeholder. In real app, fetch from DB.
     dummy_notifications = [
          {'id': 1, 'message': 'Invoice INV-2025-071 has been Approved.', 'timestamp': datetime(2025, 10, 29, 10, 30), 'is_read': False, 'category': 'success', 'link_url': url_for('main.all_invoices')},
          {'id': 2, 'message': 'Payment for INV-2025-065 has been processed.', 'timestamp': datetime(2025, 10, 28, 15, 0), 'is_read': False, 'category': 'success', 'link_url': '#'},
@@ -758,7 +764,7 @@ def notifications():
 # --- Payment History Route ---
 @main_bp.route('/payment-history')
 @login_required
-@user_required # --- [NEW] Loads g.user
+@user_required
 def payment_history():
     page = request.args.get('page', 1, type=int)
     paid_invoices_query = Invoice.query.filter_by(user_id=g.user.id, status='Paid')
@@ -774,5 +780,5 @@ def payment_history():
 
     return render_template('all_invoices.html',
                            invoices=paid_invoices_pagination,
-                           page_title="Payment History", # This is a good way to reuse the template
+                           page_title="Payment History",
                            q=request.args.get('q', ''))
